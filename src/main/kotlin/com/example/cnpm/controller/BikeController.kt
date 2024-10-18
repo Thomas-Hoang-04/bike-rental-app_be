@@ -1,6 +1,5 @@
 package com.example.cnpm.controller
 
-import com.example.cnpm.model.Bike
 import com.example.cnpm.model.dto.BikeCreateRequest
 import com.example.cnpm.model.dto.BikeDTO
 import com.example.cnpm.model.dto.BikeUpdateRequest
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
