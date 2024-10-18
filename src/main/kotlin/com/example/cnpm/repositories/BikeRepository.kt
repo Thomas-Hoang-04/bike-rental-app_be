@@ -26,4 +26,7 @@ interface BikeRepository : JpaRepository<Bike, UUID> {
 
     @Query("SELECT bike_id FROM bike_data b WHERE b.plate = :plate", nativeQuery = true)
     fun getBikeIdByPlate(@Param("plate") plate: String): UUID
+
+    @Query("SELECT COUNT(*) FROM bike_data b WHERE b.plate = :plate", nativeQuery = true)
+    fun checkBikeExistByPlate(@Param("plate") plate: String): Int
 }

@@ -33,7 +33,7 @@ class BikeController {
     }
 
     @GetMapping("/id/{id}")
-    fun getBikesByID(@PathVariable id: UUID) : ResponseEntity<BikeDTO> {
+    fun getBikesByID(@Valid @PathVariable id: UUID) : ResponseEntity<BikeDTO> {
         val bike = bikeServices.getBikeById(id)
         return ResponseEntity.ok()
             .header("Title", "Bike")
@@ -41,7 +41,7 @@ class BikeController {
     }
 
     @GetMapping("/plate/{plate}")
-    fun getBikesByPlate(@PathVariable plate: String) : ResponseEntity<BikeDTO> {
+    fun getBikesByPlate(@Valid @PathVariable plate: String) : ResponseEntity<BikeDTO> {
         val bike = bikeServices.getBikeByPlate(plate)
         return ResponseEntity.ok()
             .header("Title", "Bike")

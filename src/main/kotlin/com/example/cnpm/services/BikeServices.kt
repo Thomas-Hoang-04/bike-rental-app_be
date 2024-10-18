@@ -1,6 +1,9 @@
 package com.example.cnpm.services
 
+import com.example.cnpm.exception.BikeNotFoundException
+import com.example.cnpm.exception.InvalidBikeChange
 import com.example.cnpm.model.Bike
+import com.example.cnpm.model.BikeStatus
 import com.example.cnpm.model.BikeType
 import com.example.cnpm.model.dto.BikeCreateRequest
 import com.example.cnpm.model.dto.BikeDTO
@@ -34,11 +37,28 @@ class BikeServices {
         status = bike.status
     )
 
+    fun checkBikeExistsByID(id: UUID) {
+        if (!bikeRepo.existsById(id))
+            throw BikeNotFoundException("Bike with id $id not found")
+    }
+
+    fun checkBikeExistsByPlate(plate: String) {
+        if (bikeRepo.checkBikeExistByPlate(plate) == 0)
+            throw BikeNotFoundException("Bike with plate $plate not found")
+    }
+
+
     fun getAllBikes() : List<BikeDTO> = bikeRepo.findAll().stream().map { mapBikeToDTO(it) }.toList()
 
-    fun getBikeById(id: UUID) : BikeDTO = bikeRepo.findById(id).get().let { mapBikeToDTO(it) }
+    fun getBikeById(id: UUID) : BikeDTO  {
+        checkBikeExistsByID(id)
+        return bikeRepo.findById(id).get().let { mapBikeToDTO(it) }
+    }
 
-    fun getBikeByPlate(plate: String) : BikeDTO = mapBikeToDTO(bikeRepo.getBikeByPlate(plate))
+    fun getBikeByPlate(plate: String) : BikeDTO {
+        checkBikeExistsByPlate(plate)
+        return mapBikeToDTO(bikeRepo.getBikeByPlate(plate))
+    }
 
     fun getBikeIdByPlate(plate: String) : UUID = bikeRepo.getBikeIdByPlate(plate)
 
@@ -62,6 +82,10 @@ class BikeServices {
                 val field: Field? = ReflectionUtils.findField(Bike::class.java, prop.name)
                 field?.let {
                     it.isAccessible = true
+                    if (prop.name == "status" && prop.get(req) == BikeStatus.CHARGING)
+                        if (targetBike.type != BikeType.ELECTRIC)
+                            throw InvalidBikeChange("Only electric bikes can be set to charging status")
+
                     ReflectionUtils.setField(it, targetBike, prop.get(req))
                 }
             }
