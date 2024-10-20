@@ -1,7 +1,7 @@
-package com.example.cnpm.model.dto
+package com.example.cnpm.model.bike.dto
 
-import com.example.cnpm.model.BikeStatus
-import com.example.cnpm.model.BikeType
+import com.example.cnpm.model.bike.types.BikeStatus
+import com.example.cnpm.model.bike.types.BikeType
 import java.util.UUID
 
 data class BikeDTO(
