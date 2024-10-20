@@ -19,7 +19,7 @@ interface BikeRepository : JpaRepository<Bike, UUID> {
     @Query("SELECT * FROM bike_data b WHERE b.bike_status = 'AVAILABLE'::bike_status AND b.bike_type = CAST(:type as bike_type)", nativeQuery = true)
     fun getAvailableBikesByType(@Param("type") type: String): List<Bike>
 
-    @Query("SELECT COUNT(*) FROM bike_data b WHERE b.bike_type::bike_type = CAST(:type as bike_type)", nativeQuery = true)
+    @Query("SELECT COUNT(*) FROM bike_data b WHERE b.bike_type = CAST(:type as bike_type)", nativeQuery = true)
     fun countBikesByType(@Param("type") type: String): Int
 
     @Query("SELECT * FROM bike_data b WHERE b.plate = :plate", nativeQuery = true)
