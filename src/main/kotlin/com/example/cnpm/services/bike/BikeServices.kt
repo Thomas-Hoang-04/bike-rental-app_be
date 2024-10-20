@@ -5,6 +5,7 @@ import com.example.cnpm.model.bike.entity.Bike
 import com.example.cnpm.model.bike.dto.BikeCreateRequest
 import com.example.cnpm.model.bike.dto.BikeDTO
 import com.example.cnpm.model.bike.dto.BikeUpdateRequest
+import com.example.cnpm.model.bike.types.BikeStatus
 import com.example.cnpm.model.bike.utility.BikeUtility
 import com.example.cnpm.repositories.bike.BikeRepository
 import org.springframework.beans.factory.annotation.Autowired
