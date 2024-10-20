@@ -71,7 +71,7 @@ class BikeServices(private val util: BikeUtility) {
     }
 
     fun deleteBike(plate: String) {
-        util.checkBikeExistsByPlate(plate);
+        util.checkBikeExistsByPlate(plate)
         val id: UUID = bikeRepo.getBikeIdByPlate(plate)
         val bike: Bike = bikeRepo.getReferenceById(id)
         bikeRepo.delete(bike)
