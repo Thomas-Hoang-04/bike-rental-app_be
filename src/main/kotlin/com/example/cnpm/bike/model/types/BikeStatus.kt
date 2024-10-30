@@ -1,4 +1,4 @@
-package com.example.cnpm.model.bike.types
+package com.example.cnpm.bike.model.types
 
 enum class BikeStatus {
     IN_USE,

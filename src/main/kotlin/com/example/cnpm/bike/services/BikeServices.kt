@@ -1,12 +1,12 @@
-package com.example.cnpm.services.bike
+package com.example.cnpm.bike.services
 
-import com.example.cnpm.exception.bike.BikeNotFoundException
-import com.example.cnpm.model.bike.entity.Bike
-import com.example.cnpm.model.bike.dto.BikeCreateRequest
-import com.example.cnpm.model.bike.dto.BikeDTO
-import com.example.cnpm.model.bike.dto.BikeUpdateRequest
-import com.example.cnpm.model.bike.utility.BikeUtility
-import com.example.cnpm.repositories.bike.BikeRepository
+import com.example.cnpm.bike.exception.BikeNotFoundException
+import com.example.cnpm.bike.model.entity.Bike
+import com.example.cnpm.bike.model.dto.BikeCreateRequest
+import com.example.cnpm.bike.model.dto.BikeDTO
+import com.example.cnpm.bike.model.dto.BikeUpdateRequest
+import com.example.cnpm.bike.model.utility.BikeUtility
+import com.example.cnpm.bike.repositories.BikeRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils

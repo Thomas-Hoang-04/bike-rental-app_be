@@ -1,7 +1,7 @@
-package com.example.cnpm.model.bike.dto
+package com.example.cnpm.bike.model.dto
 
-import com.example.cnpm.model.bike.types.BikeStatus
-import com.example.cnpm.model.bike.types.BikeType
+import com.example.cnpm.bike.model.types.BikeStatus
+import com.example.cnpm.bike.model.types.BikeType
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
@@ -16,5 +16,7 @@ data class BikeCreateRequest(
     @Min(0, message = "Battery must be between 0 and 100")
     @Max(100, message = "Battery must be between 0 and 100")
     val battery: Int?,
-    val status: BikeStatus?
+
+    val status: BikeStatus?,
+    val location: String?
 )

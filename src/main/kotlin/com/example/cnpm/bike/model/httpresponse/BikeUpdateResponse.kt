@@ -1,6 +1,6 @@
-package com.example.cnpm.model.httpresponse
+package com.example.cnpm.bike.model.httpresponse
 
-import com.example.cnpm.model.bike.dto.BikeDTO
+import com.example.cnpm.bike.model.dto.BikeDTO
 
 data class BikeUpdateResponse(
     val action: String,

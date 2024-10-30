@@ -1,12 +1,12 @@
-package com.example.cnpm.controller.bike
+package com.example.cnpm.bike.controller
 
-import com.example.cnpm.exception.bike.InvalidQuery
-import com.example.cnpm.model.bike.dto.BikeCreateRequest
-import com.example.cnpm.model.bike.dto.BikeDTO
-import com.example.cnpm.model.bike.dto.BikeUpdateRequest
-import com.example.cnpm.model.httpresponse.BikeQueryResponse
-import com.example.cnpm.model.httpresponse.BikeUpdateResponse
-import com.example.cnpm.services.bike.BikeServices
+import com.example.cnpm.bike.exception.InvalidQuery
+import com.example.cnpm.bike.model.dto.BikeCreateRequest
+import com.example.cnpm.bike.model.dto.BikeDTO
+import com.example.cnpm.bike.model.dto.BikeUpdateRequest
+import com.example.cnpm.bike.model.httpresponse.BikeQueryResponse
+import com.example.cnpm.bike.model.httpresponse.BikeUpdateResponse
+import com.example.cnpm.bike.services.BikeServices
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -23,7 +23,7 @@ import java.util.UUID
 
 @RestController
 @RequestMapping("/api/bike")
-class BikeController() {
+class BikeController {
 
     @Autowired
     private lateinit var bikeServices: BikeServices

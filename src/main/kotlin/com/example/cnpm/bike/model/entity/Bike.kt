@@ -1,7 +1,7 @@
-package com.example.cnpm.model.bike.entity
+package com.example.cnpm.bike.model.entity
 
-import com.example.cnpm.model.bike.types.BikeStatus
-import com.example.cnpm.model.bike.types.BikeType
+import com.example.cnpm.bike.model.types.BikeStatus
+import com.example.cnpm.bike.model.types.BikeType
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.PostgreSQLEnumJdbcType
@@ -16,7 +16,7 @@ class Bike {
     @Column(name = "bike_id")
     val id: UUID = UUID.randomUUID()
 
-    @Column(name = "plate", nullable = false, unique = true)
+    @Column(name = "plate", nullable = false, unique = true, length = 16)
     var plate: String = ""
 
     @Enumerated(EnumType.STRING)
@@ -31,5 +31,8 @@ class Bike {
     @JdbcType(PostgreSQLEnumJdbcType::class)
     @Column(name = "bike_status", nullable = false)
     var status: BikeStatus = BikeStatus.AVAILABLE
+
+    @Column(name = "bike_location", nullable = true)
+    var location: String? = null
 }
 

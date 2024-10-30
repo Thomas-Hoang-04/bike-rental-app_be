@@ -1,13 +1,13 @@
-package com.example.cnpm.model.bike.utility
+package com.example.cnpm.bike.model.utility
 
-import com.example.cnpm.exception.bike.BikeNotFoundException
-import com.example.cnpm.exception.bike.InvalidBikeUpdate
-import com.example.cnpm.model.bike.dto.BikeCreateRequest
-import com.example.cnpm.model.bike.dto.BikeDTO
-import com.example.cnpm.model.bike.entity.Bike
-import com.example.cnpm.model.bike.types.BikeStatus
-import com.example.cnpm.model.bike.types.BikeType
-import com.example.cnpm.repositories.bike.BikeRepository
+import com.example.cnpm.bike.exception.BikeNotFoundException
+import com.example.cnpm.bike.exception.InvalidBikeUpdate
+import com.example.cnpm.bike.model.dto.BikeCreateRequest
+import com.example.cnpm.bike.model.dto.BikeDTO
+import com.example.cnpm.bike.model.entity.Bike
+import com.example.cnpm.bike.model.types.BikeStatus
+import com.example.cnpm.bike.model.types.BikeType
+import com.example.cnpm.bike.repositories.BikeRepository
 import org.springframework.stereotype.Component
 import java.util.UUID
 
@@ -18,6 +18,7 @@ class BikeUtility(private val bikeRepo: BikeRepository) {
         bike.type = req.type
         bike.battery = req.battery ?: bike.battery
         bike.status = req.status ?: bike.status
+        bike.location = req.location ?: bike.location
     }
 
     fun mapBikeToDTO(bike: Bike) = BikeDTO(
@@ -25,7 +26,8 @@ class BikeUtility(private val bikeRepo: BikeRepository) {
         plate = bike.plate,
         type = bike.type,
         battery = bike.battery,
-        status = bike.status
+        status = bike.status,
+        location = bike.location
     )
 
     fun checkBikeExistsByID(id: UUID) {
@@ -46,6 +48,7 @@ class BikeUtility(private val bikeRepo: BikeRepository) {
 
     fun verifyBikeStatus(status: BikeStatus, type: BikeType) {
         if (status == BikeStatus.CHARGING && type == BikeType.ELECTRIC) return
+        if (status == BikeStatus.AVAILABLE || status == BikeStatus.IN_USE) return
         throw InvalidBikeUpdate("Only electric bikes can set status to CHARGING")
     }
 }
