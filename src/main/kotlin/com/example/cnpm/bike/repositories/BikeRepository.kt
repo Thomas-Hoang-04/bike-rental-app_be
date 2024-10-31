@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
-import java.util.UUID
+import java.util.*
 
 @Repository
 interface BikeRepository : JpaRepository<Bike, UUID> {
@@ -23,11 +23,12 @@ interface BikeRepository : JpaRepository<Bike, UUID> {
     fun countBikesByType(@Param("type") type: String): Int
 
     @Query("SELECT * FROM bike_data b WHERE b.plate = :plate", nativeQuery = true)
-    fun getBikeByPlate(@Param("plate") plate: String): Bike
+    fun getBikeByPlate(@Param("plate") plate: String): Optional<Bike>
 
     @Query("SELECT bike_id FROM bike_data b WHERE b.plate = :plate", nativeQuery = true)
-    fun getBikeIdByPlate(@Param("plate") plate: String): UUID
+    fun getBikeIdByPlate(@Param("plate") plate: String): Optional<UUID>
 
-    @Query("SELECT COUNT(*) FROM bike_data b WHERE b.plate = :plate", nativeQuery = true)
-    fun checkBikeExistByPlate(@Param("plate") plate: String): Int
+    @Query("SELECT COUNT(*) FROM bike_data b WHERE b.bike_location = :location", nativeQuery = true)
+    fun checkBikeCountByLocation(@Param("location") location: String): Int
+
 }

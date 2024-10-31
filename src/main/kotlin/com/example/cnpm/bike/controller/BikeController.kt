@@ -1,12 +1,13 @@
 package com.example.cnpm.bike.controller
 
-import com.example.cnpm.bike.exception.InvalidQuery
-import com.example.cnpm.bike.model.dto.BikeCreateRequest
-import com.example.cnpm.bike.model.dto.BikeDTO
-import com.example.cnpm.bike.model.dto.BikeUpdateRequest
+import com.example.cnpm.bike.model.dto.bike.BikeCreateRequest
+import com.example.cnpm.bike.model.dto.bike.BikeDTO
+import com.example.cnpm.bike.model.dto.bike.BikeUpdateRequest
 import com.example.cnpm.bike.model.httpresponse.BikeQueryResponse
 import com.example.cnpm.bike.model.httpresponse.BikeUpdateResponse
+import com.example.cnpm.bike.model.types.BikeType
 import com.example.cnpm.bike.services.BikeServices
+import com.example.cnpm.bike.services.BikeStationServices
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -20,13 +21,15 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
-
 @RestController
 @RequestMapping("/api/bike")
 class BikeController {
 
     @Autowired
     private lateinit var bikeServices: BikeServices
+
+    @Autowired
+    private lateinit var stationServices: BikeStationServices
 
     @GetMapping("/all")
     fun getAllBikes() : ResponseEntity<BikeQueryResponse> {
@@ -53,12 +56,11 @@ class BikeController {
     }
 
     @GetMapping("/{type}")
-    fun getBikesByType(@Valid @PathVariable type: String) : ResponseEntity<BikeQueryResponse> {
-        if (type != "electric" && type != "manual") throw InvalidQuery("Invalid bike type")
-        val bikes: List<BikeDTO> = bikeServices.getBikeByType(type.uppercase())
+    fun getBikesByType(@Valid @PathVariable type: BikeType) : ResponseEntity<BikeQueryResponse> {
+        val bikes: List<BikeDTO> = bikeServices.getBikeByType(type)
         return ResponseEntity.ok()
             .header("Title", "BikeList by type $type")
-            .body(BikeQueryResponse("type", mapOf("type" to type), bikes))
+            .body(BikeQueryResponse("type", mapOf("type" to type.name), bikes))
     }
 
     @GetMapping("/available")
@@ -70,21 +72,19 @@ class BikeController {
     }
 
     @GetMapping("/available/{type}")
-    fun getAvailableBikesByType(@Valid @PathVariable type: String) : ResponseEntity<BikeQueryResponse> {
-        if (type != "electric" && type != "manual") throw InvalidQuery("Invalid bike type")
-        val bikes: List<BikeDTO> = bikeServices.getAvailableBikesByType(type.uppercase())
+    fun getAvailableBikesByType(@Valid @PathVariable type: BikeType) : ResponseEntity<BikeQueryResponse> {
+        val bikes: List<BikeDTO> = bikeServices.getAvailableBikesByType(type)
         return ResponseEntity.ok()
             .header("Title", "AvailableBikeList by type $type")
-            .body(BikeQueryResponse("status", mapOf("status" to "available", "type" to type), bikes))
+            .body(BikeQueryResponse("status", mapOf("status" to "available", "type" to type.name), bikes))
     }
 
     @GetMapping("/count/{type}")
-    fun countBikesByType(@Valid @PathVariable type: String) : ResponseEntity<Map<String, String>> {
-        if (type != "electric" && type != "manual") throw InvalidQuery("Invalid bike type")
-        val count: Int = bikeServices.countBikesByType(type.uppercase())
+    fun countBikesByType(@Valid @PathVariable type: BikeType) : ResponseEntity<Map<String, String>> {
+        val count: Int = bikeServices.countBikesByType(type)
         return ResponseEntity.ok()
             .header("Title", "BikeCount")
-            .body(mapOf("queryBy" to "bike_count", "type" to type, "count" to count.toString()))
+            .body(mapOf("queryBy" to "bike_count", "type" to type.name, "count" to count.toString()))
     }
 
     @PostMapping("/add")
@@ -98,7 +98,8 @@ class BikeController {
     @PatchMapping("/update")
     fun updateBike(@Valid @RequestBody bike: BikeUpdateRequest) : ResponseEntity<BikeUpdateResponse> {
         val id: UUID = bikeServices.getBikeIdByPlate(bike.plate)
-        val updatedBike: BikeDTO = bikeServices.updateBike(id, bike)
+        val capacity: Int? = if (bike.location != null) stationServices.getStationCapacity(bike.location) else null
+        val updatedBike: BikeDTO = bikeServices.updateBike(id, bike, capacity)
         return ResponseEntity.ok()
             .header("Title", "BikeUpdated")
             .body(BikeUpdateResponse("update", "success", updatedBike))

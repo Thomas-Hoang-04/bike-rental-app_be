@@ -1,4 +1,4 @@
-package com.example.cnpm.bike.model.dto
+package com.example.cnpm.bike.model.dto.bike
 
 import com.example.cnpm.bike.model.types.BikeStatus
 import com.example.cnpm.bike.model.types.BikeType

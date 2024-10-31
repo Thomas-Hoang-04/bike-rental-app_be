@@ -1,6 +1,6 @@
 package com.example.cnpm.bike.model.httpresponse
 
-import com.example.cnpm.bike.model.dto.BikeDTO
+import com.example.cnpm.bike.model.dto.bike.BikeDTO
 
 data class BikeQueryResponse(
     val queryBy: String,
