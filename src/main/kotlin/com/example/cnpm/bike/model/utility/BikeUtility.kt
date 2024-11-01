@@ -1,7 +1,7 @@
 package com.example.cnpm.bike.model.utility
 
-import com.example.cnpm.bike.exception.DataNotFoundException
-import com.example.cnpm.bike.exception.InvalidUpdate
+import com.example.cnpm.exception.DataNotFoundException
+import com.example.cnpm.exception.InvalidUpdate
 import com.example.cnpm.bike.model.dto.bike.BikeCreateRequest
 import com.example.cnpm.bike.model.dto.bike.BikeDTO
 import com.example.cnpm.bike.model.entity.Bike

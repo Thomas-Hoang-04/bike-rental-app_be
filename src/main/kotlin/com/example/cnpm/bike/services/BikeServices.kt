@@ -1,10 +1,10 @@
 package com.example.cnpm.bike.services
 
-import com.example.cnpm.bike.exception.DataNotFoundException
-import com.example.cnpm.bike.model.entity.Bike
+import com.example.cnpm.exception.DataNotFoundException
 import com.example.cnpm.bike.model.dto.bike.BikeCreateRequest
 import com.example.cnpm.bike.model.dto.bike.BikeDTO
 import com.example.cnpm.bike.model.dto.bike.BikeUpdateRequest
+import com.example.cnpm.bike.model.entity.Bike
 import com.example.cnpm.bike.model.types.BikeType
 import com.example.cnpm.bike.model.utility.BikeUtility
 import com.example.cnpm.bike.repositories.BikeRepository

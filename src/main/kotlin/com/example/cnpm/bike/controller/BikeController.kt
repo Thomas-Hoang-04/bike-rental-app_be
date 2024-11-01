@@ -7,7 +7,7 @@ import com.example.cnpm.bike.model.httpresponse.BikeQueryResponse
 import com.example.cnpm.bike.model.httpresponse.BikeUpdateResponse
 import com.example.cnpm.bike.model.types.BikeType
 import com.example.cnpm.bike.services.BikeServices
-import com.example.cnpm.bike.services.BikeStationServices
+import com.example.cnpm.station.services.BikeStationServices
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+
+
 import java.util.UUID
 
 @RestController
