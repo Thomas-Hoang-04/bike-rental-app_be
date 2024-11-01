@@ -1,6 +1,6 @@
-package com.example.cnpm.bike.model.dto.station
+package com.example.cnpm.station.model.dto.station
 
-import com.example.cnpm.bike.model.types.BikeStationStatus
+import com.example.cnpm.station.model.types.BikeStationStatus
 import jakarta.validation.constraints.NotBlank
 
 data class BikeStationCreateRequest(

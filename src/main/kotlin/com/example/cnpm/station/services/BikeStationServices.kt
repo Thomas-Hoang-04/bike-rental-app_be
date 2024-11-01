@@ -1,14 +1,14 @@
-package com.example.cnpm.bike.services
+package com.example.cnpm.station.services
 
-import com.example.cnpm.bike.exception.DataNotFoundException
-import com.example.cnpm.bike.exception.InvalidUpdate
-import com.example.cnpm.bike.model.dto.station.BikeStationCreateRequest
-import com.example.cnpm.bike.model.dto.station.BikeStationDTO
-import com.example.cnpm.bike.model.dto.station.BikeStationDeleteRequest
-import com.example.cnpm.bike.model.dto.station.BikeStationUpdateRequest
-import com.example.cnpm.bike.model.entity.BikeStation
-import com.example.cnpm.bike.model.utility.BikeStationUtility
-import com.example.cnpm.bike.repositories.BikeStationRepository
+import com.example.cnpm.exception.DataNotFoundException
+import com.example.cnpm.exception.InvalidUpdate
+import com.example.cnpm.station.model.dto.station.BikeStationCreateRequest
+import com.example.cnpm.station.model.dto.station.BikeStationDTO
+import com.example.cnpm.station.model.dto.station.BikeStationDeleteRequest
+import com.example.cnpm.station.model.dto.station.BikeStationUpdateRequest
+import com.example.cnpm.station.model.entity.BikeStation
+import com.example.cnpm.station.model.utility.BikeStationUtility
+import com.example.cnpm.station.repositories.BikeStationRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 

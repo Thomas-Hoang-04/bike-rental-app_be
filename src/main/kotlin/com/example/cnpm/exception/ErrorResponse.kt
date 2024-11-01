@@ -1,4 +1,4 @@
-package com.example.cnpm.bike.model.httpresponse
+package com.example.cnpm.exception
 
 import java.time.LocalDateTime
 

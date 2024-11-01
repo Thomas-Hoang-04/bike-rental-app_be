@@ -1,6 +1,7 @@
-package com.example.cnpm.bike.model.entity
+package com.example.cnpm.station.model.entity
 
-import com.example.cnpm.bike.model.types.BikeStationStatus
+import com.example.cnpm.bike.model.entity.Bike
+import com.example.cnpm.station.model.types.BikeStationStatus
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.PostgreSQLEnumJdbcType

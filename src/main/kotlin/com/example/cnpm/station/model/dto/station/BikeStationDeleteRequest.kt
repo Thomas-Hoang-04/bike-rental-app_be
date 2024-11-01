@@ -1,4 +1,4 @@
-package com.example.cnpm.bike.model.dto.station
+package com.example.cnpm.station.model.dto.station
 
 import jakarta.validation.constraints.NotBlank
 

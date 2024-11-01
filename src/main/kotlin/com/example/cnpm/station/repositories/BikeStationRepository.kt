@@ -1,6 +1,6 @@
-package com.example.cnpm.bike.repositories
+package com.example.cnpm.station.repositories
 
-import com.example.cnpm.bike.model.entity.BikeStation
+import com.example.cnpm.station.model.entity.BikeStation
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
