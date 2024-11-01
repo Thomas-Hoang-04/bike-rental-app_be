@@ -1,4 +1,4 @@
-package com.example.cnpm.config
+package com.example.cnpm.bike.config
 
 import com.example.cnpm.bike.exception.DataNotFoundException
 import com.example.cnpm.bike.exception.InvalidUpdate
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.time.LocalDateTime
 
 @ControllerAdvice
-class ExceptionHandler: ResponseEntityExceptionHandler() {
+class BikeExceptionHandler: ResponseEntityExceptionHandler() {
 
     private fun generateTemplate(ex: Exception, req: WebRequest, status: HttpStatus): ErrorResponse {
         return ErrorResponse(
