@@ -1,5 +1,5 @@
 HELP.md
-secrets.properties
+secrets.yaml
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar

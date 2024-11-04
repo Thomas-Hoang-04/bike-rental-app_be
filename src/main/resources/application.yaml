@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: Bike Rental App
+
+  config:
+    import: optional:secrets.yaml
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    open-in-view: false
+
+server:
+  port: 4080
+
+
+
