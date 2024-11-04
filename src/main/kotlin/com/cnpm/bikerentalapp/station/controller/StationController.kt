@@ -2,7 +2,6 @@ package com.cnpm.bikerentalapp.station.controller
 
 import com.cnpm.bikerentalapp.station.model.dto.NearbyStation
 import com.cnpm.bikerentalapp.station.model.dto.StationDTO
-import com.cnpm.bikerentalapp.station.model.dto.StationsByCity
 import com.cnpm.bikerentalapp.station.model.httprequest.StationCreateRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationDeleteRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationUpdateRequest
@@ -56,11 +55,11 @@ class StationController {
     }
 
     @GetMapping("/region")
-    fun getStationsByCity(@Validated @RequestBody req: StationsByCity) : ResponseEntity<StationQueryResponse<String>> {
-        val stations: List<StationDTO> = stationServices.getStationsByCity(req.city)
+    fun getStationsByCity(@Validated @RequestParam city: String) : ResponseEntity<StationQueryResponse<String>> {
+        val stations: List<StationDTO> = stationServices.getStationsByCity(city)
         return ResponseEntity.ok()
             .header("Title", "Stations by city")
-            .body(StationQueryResponse("city", mapOf("city" to req.city), stations))
+            .body(StationQueryResponse("city", mapOf("city" to city), stations))
     }
 
     @GetMapping("/available")
