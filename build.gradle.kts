@@ -26,9 +26,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-configuration-processor")
-    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.projectlombok:lombok")
-    testImplementation("org.springframework.security:spring-security-test")
+    implementation("org.locationtech.jts:jts-core:1.20.0")
+    implementation("org.hibernate:hibernate-spatial:6.6.1.Final")
     runtimeOnly("org.postgresql:postgresql")
     implementation("com.twilio.sdk:twilio:10.6.2") {
         exclude(group = "commons-logging", module = "commons-logging")
@@ -37,7 +37,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation("com.google.openlocationcode:openlocationcode:1.0.4")
 }
 
 kotlin {

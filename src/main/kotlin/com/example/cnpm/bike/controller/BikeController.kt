@@ -1,16 +1,16 @@
 package com.example.cnpm.bike.controller
 
-import com.example.cnpm.bike.model.dto.bike.BikeCreateRequest
-import com.example.cnpm.bike.model.dto.bike.BikeDTO
-import com.example.cnpm.bike.model.dto.bike.BikeUpdateRequest
+import com.example.cnpm.bike.model.httprequest.BikeCreateRequest
+import com.example.cnpm.bike.model.dto.BikeDTO
+import com.example.cnpm.bike.model.httprequest.BikeUpdateRequest
 import com.example.cnpm.bike.model.httpresponse.BikeQueryResponse
 import com.example.cnpm.bike.model.httpresponse.BikeUpdateResponse
 import com.example.cnpm.bike.model.types.BikeType
 import com.example.cnpm.bike.services.BikeServices
-import com.example.cnpm.station.services.BikeStationServices
-import jakarta.validation.Valid
+import com.example.cnpm.station.services.StationServices
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -31,10 +31,10 @@ class BikeController {
     private lateinit var bikeServices: BikeServices
 
     @Autowired
-    private lateinit var stationServices: BikeStationServices
+    private lateinit var stationServices: StationServices
 
     @GetMapping("/all")
-    fun getAllBikes() : ResponseEntity<BikeQueryResponse> {
+    fun getAllBikes() : ResponseEntity<BikeQueryResponse<Unit>> {
         val bikes: List<BikeDTO> = bikeServices.getAllBikes()
         return ResponseEntity.ok()
             .header("Title", "BikeList")
@@ -42,31 +42,31 @@ class BikeController {
     }
 
     @GetMapping("/id/{id}")
-    fun getBikesByID(@Valid @PathVariable id: UUID) : ResponseEntity<BikeQueryResponse> {
-        val bike = bikeServices.getBikeById(id)
+    fun getBikesByID(@Validated @PathVariable id: UUID) : ResponseEntity<BikeQueryResponse<UUID>> {
+        val bike: BikeDTO = bikeServices.getBikeById(id)
         return ResponseEntity.ok()
             .header("Title", "Bike")
-            .body(BikeQueryResponse("id", mapOf("id" to id.toString()), listOf(bike)))
+            .body(BikeQueryResponse("id", mapOf("id" to id), listOf(bike)))
     }
 
     @GetMapping("/plate/{plate}")
-    fun getBikesByPlate(@Valid @PathVariable plate: String) : ResponseEntity<BikeQueryResponse> {
-        val bike = bikeServices.getBikeByPlate(plate)
+    fun getBikesByPlate(@Validated @PathVariable plate: String) : ResponseEntity<BikeQueryResponse<String>> {
+        val bike: BikeDTO = bikeServices.getBikeByPlate(plate)
         return ResponseEntity.ok()
             .header("Title", "Bike by plate $plate")
             .body(BikeQueryResponse("plate", mapOf("plate" to plate), listOf(bike)))
     }
 
     @GetMapping("/{type}")
-    fun getBikesByType(@Valid @PathVariable type: BikeType) : ResponseEntity<BikeQueryResponse> {
+    fun getBikesByType(@Validated @PathVariable type: BikeType) : ResponseEntity<BikeQueryResponse<BikeType>> {
         val bikes: List<BikeDTO> = bikeServices.getBikeByType(type)
         return ResponseEntity.ok()
             .header("Title", "BikeList by type $type")
-            .body(BikeQueryResponse("type", mapOf("type" to type.name), bikes))
+            .body(BikeQueryResponse("type", mapOf("type" to type), bikes))
     }
 
     @GetMapping("/available")
-    fun getAvailableBikes() : ResponseEntity<BikeQueryResponse> {
+    fun getAvailableBikes() : ResponseEntity<BikeQueryResponse<String>> {
         val bikes: List<BikeDTO> = bikeServices.getAvailableBikes()
         return ResponseEntity.ok()
             .header("Title", "AvailableBikeList")
@@ -74,7 +74,7 @@ class BikeController {
     }
 
     @GetMapping("/available/{type}")
-    fun getAvailableBikesByType(@Valid @PathVariable type: BikeType) : ResponseEntity<BikeQueryResponse> {
+    fun getAvailableBikesByType(@Validated @PathVariable type: BikeType) : ResponseEntity<BikeQueryResponse<String>> {
         val bikes: List<BikeDTO> = bikeServices.getAvailableBikesByType(type)
         return ResponseEntity.ok()
             .header("Title", "AvailableBikeList by type $type")
@@ -82,7 +82,7 @@ class BikeController {
     }
 
     @GetMapping("/count/{type}")
-    fun countBikesByType(@Valid @PathVariable type: BikeType) : ResponseEntity<Map<String, String>> {
+    fun countBikesByType(@Validated @PathVariable type: BikeType) : ResponseEntity<Map<String, String>> {
         val count: Int = bikeServices.countBikesByType(type)
         return ResponseEntity.ok()
             .header("Title", "BikeCount")
@@ -90,7 +90,7 @@ class BikeController {
     }
 
     @PostMapping("/add")
-    fun addBike(@Valid @RequestBody bike: BikeCreateRequest) : ResponseEntity<BikeUpdateResponse> {
+    fun addBike(@Validated @RequestBody bike: BikeCreateRequest) : ResponseEntity<BikeUpdateResponse> {
         val newBike: BikeDTO = bikeServices.addBike(bike)
         return ResponseEntity.ok()
             .header("Title", "BikeAdded")
@@ -98,9 +98,9 @@ class BikeController {
     }
 
     @PatchMapping("/update")
-    fun updateBike(@Valid @RequestBody bike: BikeUpdateRequest) : ResponseEntity<BikeUpdateResponse> {
+    fun updateBike(@Validated @RequestBody bike: BikeUpdateRequest) : ResponseEntity<BikeUpdateResponse> {
         val id: UUID = bikeServices.getBikeIdByPlate(bike.plate)
-        val capacity: Int? = if (bike.location != null) stationServices.getStationCapacity(bike.location) else null
+        val capacity: Int? = if (bike.location != null) stationServices.getStationByID(bike.location).capacity else null
         val updatedBike: BikeDTO = bikeServices.updateBike(id, bike, capacity)
         return ResponseEntity.ok()
             .header("Title", "BikeUpdated")
@@ -108,7 +108,7 @@ class BikeController {
     }
 
     @DeleteMapping("/delete/{plate}")
-    fun deleteBike(@Valid @PathVariable plate: String) : ResponseEntity<BikeUpdateResponse> {
+    fun deleteBike(@Validated @PathVariable plate: String) : ResponseEntity<BikeUpdateResponse> {
         bikeServices.deleteBike(plate)
         return ResponseEntity.ok()
             .header("Title", "BikeDeleted")

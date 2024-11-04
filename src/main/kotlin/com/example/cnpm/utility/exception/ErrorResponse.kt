@@ -1,4 +1,4 @@
-package com.example.cnpm.exception
+package com.example.cnpm.utility.exception
 
 import java.time.LocalDateTime
 

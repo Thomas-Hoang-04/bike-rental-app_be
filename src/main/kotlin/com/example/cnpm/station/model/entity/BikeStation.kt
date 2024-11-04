@@ -1,10 +1,14 @@
 package com.example.cnpm.station.model.entity
 
 import com.example.cnpm.bike.model.entity.Bike
-import com.example.cnpm.station.model.types.BikeStationStatus
+import com.example.cnpm.station.model.types.StationStatus
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.PostgreSQLEnumJdbcType
+import org.locationtech.jts.geom.Coordinate
+import org.locationtech.jts.geom.GeometryFactory
+import org.locationtech.jts.geom.Point
+import java.util.UUID
 
 @Entity
 @Table(name = "bike_station", indexes = [Index(name = "station_region_id", columnList = "region_id, region_num", unique = true)])
@@ -12,13 +16,22 @@ class BikeStation {
 
     @Id
     @Column(name = "station_id")
-    val locationID: String = ""
+    val stationID: UUID = UUID.randomUUID()
 
     @Column(name = "region_id", nullable = false, length = 3)
     var regionID: String = ""
 
     @Column(name = "region_num", nullable = false)
     var regionNum: Int = 0
+
+    @Column(name = "latitude", nullable = false)
+    var latitude: Double = 0.0
+
+    @Column(name = "longitude", nullable = false)
+    var longitude: Double = 0.0
+
+    @Column(name = "station_geo", columnDefinition = "GEOGRAPHY(Point, 4326)", nullable = false)
+    var geoLocation: Point = GeometryFactory().createPoint(Coordinate(0.0, 0.0))
 
     @Column(name = "station_name", nullable = false)
     var name: String = ""
@@ -32,7 +45,7 @@ class BikeStation {
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType::class)
     @Column(name = "status", nullable = false)
-    var status: BikeStationStatus = BikeStationStatus.ACTIVE
+    var status: StationStatus = StationStatus.ACTIVE
 
     @OneToMany(targetEntity = Bike::class, cascade = [CascadeType.ALL])
     @JoinColumn(name = "bike_location", referencedColumnName = "station_id")

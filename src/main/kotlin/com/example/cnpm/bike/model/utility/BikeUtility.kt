@@ -1,9 +1,9 @@
 package com.example.cnpm.bike.model.utility
 
-import com.example.cnpm.exception.DataNotFoundException
-import com.example.cnpm.exception.InvalidUpdate
-import com.example.cnpm.bike.model.dto.bike.BikeCreateRequest
-import com.example.cnpm.bike.model.dto.bike.BikeDTO
+import com.example.cnpm.utility.exception.DataNotFoundException
+import com.example.cnpm.utility.exception.InvalidUpdate
+import com.example.cnpm.bike.model.httprequest.BikeCreateRequest
+import com.example.cnpm.bike.model.dto.BikeDTO
 import com.example.cnpm.bike.model.entity.Bike
 import com.example.cnpm.bike.model.types.BikeStatus
 import com.example.cnpm.bike.model.types.BikeType
@@ -47,7 +47,7 @@ class BikeUtility(private val bikeRepo: BikeRepository) {
         throw InvalidUpdate("Only electric bikes can set status to CHARGING")
     }
 
-    fun checkAvailableSpaceByLocation(location: String, capacity: Int) {
+    fun checkAvailableSpaceByLocation(location: UUID, capacity: Int) {
         if (bikeRepo.checkBikeCountByLocation(location) >= capacity)
             throw InvalidUpdate("Bike count at location $location exceeds maximum capacity of $capacity")
     }

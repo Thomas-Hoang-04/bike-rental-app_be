@@ -1,6 +1,6 @@
 package com.example.cnpm.station.model.types
 
-enum class BikeStationStatus {
+enum class StationStatus {
     ACTIVE,
     INACTIVE
 }

@@ -33,6 +33,6 @@ class Bike {
     var status: BikeStatus = BikeStatus.AVAILABLE
 
     @Column(name = "bike_location", nullable = true)
-    var location: String? = null
+    var location: UUID? = null
 }
 

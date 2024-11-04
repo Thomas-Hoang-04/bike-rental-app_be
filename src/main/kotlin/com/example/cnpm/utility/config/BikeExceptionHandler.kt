@@ -1,9 +1,9 @@
-package com.example.cnpm.config
+package com.example.cnpm.utility.config
 
-import com.example.cnpm.exception.DataNotFoundException
-import com.example.cnpm.exception.InvalidUpdate
-import com.example.cnpm.exception.InvalidQuery
-import com.example.cnpm.exception.ErrorResponse
+import com.example.cnpm.utility.exception.DataNotFoundException
+import com.example.cnpm.utility.exception.InvalidUpdate
+import com.example.cnpm.utility.exception.InvalidQuery
+import com.example.cnpm.utility.exception.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice

@@ -1,4 +1,4 @@
-package com.example.cnpm.bike.model.dto.bike
+package com.example.cnpm.bike.model.dto
 
 import com.example.cnpm.bike.model.types.BikeStatus
 import com.example.cnpm.bike.model.types.BikeType
@@ -10,5 +10,5 @@ data class BikeDTO(
     val type: BikeType,
     val battery: Int,
     val status: BikeStatus,
-    val location: String?,
+    val location: UUID?,
 )

@@ -1,9 +1,9 @@
 package com.example.cnpm.bike.services
 
-import com.example.cnpm.exception.DataNotFoundException
-import com.example.cnpm.bike.model.dto.bike.BikeCreateRequest
-import com.example.cnpm.bike.model.dto.bike.BikeDTO
-import com.example.cnpm.bike.model.dto.bike.BikeUpdateRequest
+import com.example.cnpm.utility.exception.DataNotFoundException
+import com.example.cnpm.bike.model.httprequest.BikeCreateRequest
+import com.example.cnpm.bike.model.dto.BikeDTO
+import com.example.cnpm.bike.model.httprequest.BikeUpdateRequest
 import com.example.cnpm.bike.model.entity.Bike
 import com.example.cnpm.bike.model.types.BikeType
 import com.example.cnpm.bike.model.utility.BikeUtility
@@ -70,7 +70,7 @@ class BikeServices(private val util: BikeUtility) {
                 ReflectionUtils.setField(field, targetBike, prop.get(req))
             }
         }
-        val savedBike = bikeRepo.save(targetBike)
+        val savedBike: Bike = bikeRepo.save(targetBike)
         return util.mapBikeToDTO(savedBike)
     }
 
