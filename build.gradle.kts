@@ -29,6 +29,9 @@ dependencies {
     implementation("org.projectlombok:lombok")
     implementation("org.locationtech.jts:jts-core:1.20.0")
     implementation("org.hibernate:hibernate-spatial:6.6.1.Final")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("com.auth0:java-jwt:4.4.0")
+    testImplementation("org.springframework.security:spring-security-test")
     runtimeOnly("org.postgresql:postgresql")
     implementation("com.twilio.sdk:twilio:10.6.2") {
         exclude(group = "commons-logging", module = "commons-logging")
