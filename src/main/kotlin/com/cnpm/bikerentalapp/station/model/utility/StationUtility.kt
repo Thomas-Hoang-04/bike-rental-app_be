@@ -3,8 +3,8 @@ package com.cnpm.bikerentalapp.station.model.utility
 import com.cnpm.bikerentalapp.station.model.dto.StationDTO
 import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import com.cnpm.bikerentalapp.station.model.httprequest.StationCreateRequest
-import com.cnpm.bikerentalapp.station.repositories.StationRepository
-import com.cnpm.bikerentalapp.utility.exception.DataNotFoundException
+import com.cnpm.bikerentalapp.station.repository.StationRepository
+import com.cnpm.bikerentalapp.exception.model.DataNotFoundException
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Point
