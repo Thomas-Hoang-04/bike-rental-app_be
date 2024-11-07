@@ -6,9 +6,9 @@ import com.cnpm.bikerentalapp.station.model.httprequest.StationCreateRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationDeleteRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationUpdateRequest
 import com.cnpm.bikerentalapp.station.model.utility.StationUtility
-import com.cnpm.bikerentalapp.station.repository.StationRepository
-import com.cnpm.bikerentalapp.exception.model.DataNotFoundException
-import com.cnpm.bikerentalapp.exception.model.InvalidUpdate
+import com.cnpm.bikerentalapp.station.repositories.StationRepository
+import com.cnpm.bikerentalapp.utility.exception.DataNotFoundException
+import com.cnpm.bikerentalapp.utility.exception.InvalidUpdate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils

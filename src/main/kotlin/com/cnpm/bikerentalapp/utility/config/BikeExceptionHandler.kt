@@ -1,6 +1,9 @@
-package com.cnpm.bikerentalapp.exception.handler
+package com.cnpm.bikerentalapp.utility.config
 
-import com.cnpm.bikerentalapp.exception.model.*
+import com.cnpm.bikerentalapp.utility.exception.DataNotFoundException
+import com.cnpm.bikerentalapp.utility.exception.InvalidUpdate
+import com.cnpm.bikerentalapp.utility.exception.InvalidQuery
+import com.cnpm.bikerentalapp.utility.exception.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -10,14 +13,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.time.LocalDateTime
 
 @ControllerAdvice
-class ExceptionHandler: ResponseEntityExceptionHandler() {
+class BikeExceptionHandler: ResponseEntityExceptionHandler() {
 
     private fun generateTemplate(ex: Exception, req: WebRequest, status: HttpStatus): ErrorResponse {
         return ErrorResponse(
             timestamp = LocalDateTime.now(),
             status = status.value(),
             error = status.name,
-            type = ex.javaClass,
             message = ex.message ?: status.reasonPhrase,
             path = req.getDescription(false) // Get the path of the request
         )

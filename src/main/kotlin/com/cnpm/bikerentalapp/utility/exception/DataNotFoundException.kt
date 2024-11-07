@@ -1,4 +1,4 @@
-package com.cnpm.bikerentalapp.exception.model
+package com.cnpm.bikerentalapp.utility.exception
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus

@@ -5,9 +5,9 @@ import com.cnpm.bikerentalapp.bike.model.entity.Bike
 import com.cnpm.bikerentalapp.bike.model.httprequest.BikeCreateRequest
 import com.cnpm.bikerentalapp.bike.model.types.BikeStatus
 import com.cnpm.bikerentalapp.bike.model.types.BikeType
-import com.cnpm.bikerentalapp.bike.repository.BikeRepository
-import com.cnpm.bikerentalapp.exception.model.DataNotFoundException
-import com.cnpm.bikerentalapp.exception.model.InvalidUpdate
+import com.cnpm.bikerentalapp.bike.repositories.BikeRepository
+import com.cnpm.bikerentalapp.utility.exception.DataNotFoundException
+import com.cnpm.bikerentalapp.utility.exception.InvalidUpdate
 import org.springframework.stereotype.Component
 import java.util.*
 

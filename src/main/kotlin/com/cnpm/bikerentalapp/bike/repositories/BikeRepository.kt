@@ -1,4 +1,4 @@
-package com.cnpm.bikerentalapp.bike.repository
+package com.cnpm.bikerentalapp.bike.repositories
 
 import com.cnpm.bikerentalapp.bike.model.entity.Bike
 import org.springframework.data.jpa.repository.JpaRepository
