@@ -1,6 +1,5 @@
 package com.cnpm.bikerentalapp.station.model.entity
 
-import com.cnpm.bikerentalapp.bike.model.entity.Bike
 import com.cnpm.bikerentalapp.station.model.types.StationStatus
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcType
@@ -8,7 +7,7 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Point
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "bike_station", indexes = [Index(name = "station_region_id", columnList = "region_id, region_num", unique = true)])

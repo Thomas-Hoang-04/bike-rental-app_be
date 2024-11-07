@@ -1,6 +1,5 @@
 package com.cnpm.bikerentalapp.station.model.dto
 
-import com.cnpm.bikerentalapp.bike.model.entity.Bike
 import com.cnpm.bikerentalapp.station.model.types.StationStatus
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*

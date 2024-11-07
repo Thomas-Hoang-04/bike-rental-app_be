@@ -1,7 +1,9 @@
 package com.cnpm.bikerentalapp.exception.handler
 
-import com.auth0.jwt.exceptions.JWTVerificationException
-import com.cnpm.bikerentalapp.exception.model.*
+import com.cnpm.bikerentalapp.exception.model.DataNotFoundException
+import com.cnpm.bikerentalapp.exception.model.ErrorResponse
+import com.cnpm.bikerentalapp.exception.model.InvalidQuery
+import com.cnpm.bikerentalapp.exception.model.InvalidUpdate
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
