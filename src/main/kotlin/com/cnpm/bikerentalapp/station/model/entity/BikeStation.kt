@@ -1,6 +1,5 @@
 package com.cnpm.bikerentalapp.station.model.entity
 
-import com.cnpm.bikerentalapp.bike.model.entity.Bike
 import com.cnpm.bikerentalapp.station.model.types.StationStatus
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcType
@@ -46,8 +45,4 @@ class BikeStation {
     @JdbcType(PostgreSQLEnumJdbcType::class)
     @Column(name = "status", nullable = false)
     var status: StationStatus = StationStatus.ACTIVE
-
-    @OneToMany(targetEntity = Bike::class, cascade = [CascadeType.ALL])
-    @JoinColumn(name = "bike_location", referencedColumnName = "station_id")
-    private val bikesList: List<Bike> = emptyList()
 }
