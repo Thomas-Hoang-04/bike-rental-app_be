@@ -17,7 +17,7 @@ class ExceptionHandler: ResponseEntityExceptionHandler() {
 
     private fun generateTemplate(ex: Exception, req: WebRequest, status: HttpStatus): ErrorResponse {
         return ErrorResponse(
-            timestamp = LocalDateTime.now(),
+            timestamp = LocalDateTime.now().toString(),
             status = status.value(),
             error = status.name,
             type = ex.javaClass,

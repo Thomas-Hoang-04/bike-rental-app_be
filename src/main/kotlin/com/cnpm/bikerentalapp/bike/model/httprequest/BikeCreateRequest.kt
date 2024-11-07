@@ -5,7 +5,7 @@ import com.cnpm.bikerentalapp.bike.model.types.BikeType
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
-import java.util.*
+import java.util.UUID
 
 data class BikeCreateRequest(
     @NotBlank(message = "Plate number is required")

@@ -7,7 +7,7 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Point
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "bike_station", indexes = [Index(name = "station_region_id", columnList = "region_id, region_num", unique = true)])

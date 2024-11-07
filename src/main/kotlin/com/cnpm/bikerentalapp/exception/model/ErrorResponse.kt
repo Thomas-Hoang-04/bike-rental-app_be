@@ -1,9 +1,7 @@
 package com.cnpm.bikerentalapp.exception.model
 
-import java.time.LocalDateTime
-
 data class ErrorResponse(
-    val timestamp: LocalDateTime,
+    val timestamp: String,
     val status: Int,
     val error: String,
     val type: Any,

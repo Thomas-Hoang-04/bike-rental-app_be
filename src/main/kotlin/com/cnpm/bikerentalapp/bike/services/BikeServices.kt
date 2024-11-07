@@ -12,7 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
-import java.util.*
+import java.util.UUID
+import java.util.Optional
 import kotlin.reflect.full.memberProperties
 
 @Service
@@ -21,7 +22,7 @@ class BikeServices(private val util: BikeUtility) {
     @Autowired
     private lateinit var bikeRepo: BikeRepository
 
-    fun getAllBikes() : List<BikeDTO> = bikeRepo.findAll().stream().map { util.mapBikeToDTO(it) }.toList()
+    fun getAllBikes() : List<BikeDTO> = bikeRepo.findAll().map { util.mapBikeToDTO(it) }.toList()
 
     fun getBikeById(id: UUID) : BikeDTO {
         util.checkBikeExistsByID(id)
@@ -40,11 +41,11 @@ class BikeServices(private val util: BikeUtility) {
         return id.get()
     }
 
-    fun getBikeByType(type: BikeType) : List<BikeDTO> = bikeRepo.getBikeByType(type.name).stream().map { util.mapBikeToDTO(it) }.toList()
+    fun getBikeByType(type: BikeType) : List<BikeDTO> = bikeRepo.getBikeByType(type.name).map { util.mapBikeToDTO(it) }.toList()
 
-    fun getAvailableBikes() : List<BikeDTO> = bikeRepo.getAvailableBikes().stream().map { util.mapBikeToDTO(it) }.toList()
+    fun getAvailableBikes() : List<BikeDTO> = bikeRepo.getAvailableBikes().map { util.mapBikeToDTO(it) }.toList()
 
-    fun getAvailableBikesByType(type: BikeType) : List<BikeDTO> = bikeRepo.getAvailableBikesByType(type.name).stream().map { util.mapBikeToDTO(it) }.toList()
+    fun getAvailableBikesByType(type: BikeType) : List<BikeDTO> = bikeRepo.getAvailableBikesByType(type.name).map { util.mapBikeToDTO(it) }.toList()
 
     fun countBikesByType(type: BikeType) : Int = bikeRepo.countBikesByType(type.name)
 

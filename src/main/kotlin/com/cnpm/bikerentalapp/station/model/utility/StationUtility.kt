@@ -9,7 +9,7 @@ import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Point
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.UUID
 
 @Component
 class StationUtility(private val stationRepo: StationRepository) {

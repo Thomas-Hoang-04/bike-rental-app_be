@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
 import java.text.DecimalFormat
-import java.util.*
+import java.util.UUID
 import kotlin.reflect.full.memberProperties
 
 @Service
@@ -23,7 +23,7 @@ class StationServices(private val util: StationUtility) {
     @Autowired
     private lateinit var stationRepo: StationRepository
 
-    fun getAllStations() : List<StationDTO> = stationRepo.findAll().stream().map {
+    fun getAllStations() : List<StationDTO> = stationRepo.findAll().map {
         util.mapStationToDTO(it) }.toList()
 
     fun getStationByID(id: UUID) : StationDTO {
@@ -38,18 +38,18 @@ class StationServices(private val util: StationUtility) {
         return util.mapStationToDTO(station)
     }
 
-    fun getStationsByRegion(regionID: String) : List<StationDTO> = stationRepo.getStationsByRegion(regionID).stream().map {
+    fun getStationsByRegion(regionID: String) : List<StationDTO> = stationRepo.getStationsByRegion(regionID).map {
         util.mapStationToDTO(it) }.toList()
 
-    fun getStationsByCity(city: String) : List<StationDTO> = stationRepo.getStationsByCity(city).stream().map {
+    fun getStationsByCity(city: String) : List<StationDTO> = stationRepo.getStationsByCity(city).map {
         util.mapStationToDTO(it) }.toList()
 
-    fun getAvailableStations() : List<StationDTO> = stationRepo.getAvailableStations().stream().map {
+    fun getAvailableStations() : List<StationDTO> = stationRepo.getAvailableStations().map {
         util.mapStationToDTO(it) }.toList()
 
     fun getNearbyStations(lat: Double, long: Double, radius: Double) : List<StationDTO> {
         val stations = stationRepo.getNearbyStations(lat, long, radius)
-        return stations.stream().map { util.mapStationToDTO(it) }.toList()
+        return stations.map { util.mapStationToDTO(it) }.toList()
     }
 
     fun addStation(req: StationCreateRequest) : StationDTO {
