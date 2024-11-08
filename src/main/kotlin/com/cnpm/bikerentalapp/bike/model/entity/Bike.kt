@@ -1,11 +1,14 @@
 package com.cnpm.bikerentalapp.bike.model.entity
 
+import com.cnpm.bikerentalapp.bike.model.dto.BikeDTO
+import com.cnpm.bikerentalapp.bike.model.httprequest.BikeCreateRequest
 import com.cnpm.bikerentalapp.bike.model.types.BikeStatus
 import com.cnpm.bikerentalapp.bike.model.types.BikeType
+import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.PostgreSQLEnumJdbcType
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "bike_data")
@@ -32,7 +35,24 @@ class Bike {
     @Column(name = "bike_status", nullable = false)
     var status: BikeStatus = BikeStatus.AVAILABLE
 
-    @Column(name = "bike_location", nullable = true)
-    var location: UUID? = null
+    @ManyToOne
+    @JoinColumn(name = "bike_location", nullable = true, referencedColumnName = "station_id")
+    var location: BikeStation? = null
+
+    fun mapBikeCreateToEntity(req: BikeCreateRequest) {
+        this.plate = req.plate
+        this.type = req.type
+        this.battery = req.battery ?: this.battery
+        this.status = req.status ?: this.status
+    }
+
+    fun mapBikeToDTO() = BikeDTO(
+        id = this.id,
+        plate = this.plate,
+        type = this.type,
+        battery = this.battery,
+        status = this.status,
+        location = this.location?.stationID
+    )
 }
 

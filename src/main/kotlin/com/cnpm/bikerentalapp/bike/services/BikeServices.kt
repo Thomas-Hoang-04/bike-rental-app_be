@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
-import java.util.UUID
-import java.util.Optional
+import java.util.*
 import kotlin.reflect.full.memberProperties
 
 @Service
@@ -22,17 +21,17 @@ class BikeServices(private val util: BikeUtility) {
     @Autowired
     private lateinit var bikeRepo: BikeRepository
 
-    fun getAllBikes() : List<BikeDTO> = bikeRepo.findAll().map { util.mapBikeToDTO(it) }.toList()
+    fun getAllBikes() : List<BikeDTO> = bikeRepo.findAll().map { it.mapBikeToDTO() }.toList()
 
     fun getBikeById(id: UUID) : BikeDTO {
         util.checkBikeExistsByID(id)
-        return bikeRepo.findById(id).get().let { util.mapBikeToDTO(it) }
+        return bikeRepo.findById(id).get().mapBikeToDTO()
     }
 
     fun getBikeByPlate(plate: String) : BikeDTO {
         val bike: Optional<Bike> = bikeRepo.getBikeByPlate(plate)
         if (bike.isEmpty) throw DataNotFoundException("Bike with plate $plate not found")
-        return util.mapBikeToDTO(bike.get())
+        return bike.get().mapBikeToDTO()
     }
 
     fun getBikeIdByPlate(plate: String) : UUID {
@@ -41,20 +40,20 @@ class BikeServices(private val util: BikeUtility) {
         return id.get()
     }
 
-    fun getBikeByType(type: BikeType) : List<BikeDTO> = bikeRepo.getBikeByType(type.name).map { util.mapBikeToDTO(it) }.toList()
+    fun getBikeByType(type: BikeType) : List<BikeDTO> = bikeRepo.getBikeByType(type.name).map { it.mapBikeToDTO() }.toList()
 
-    fun getAvailableBikes() : List<BikeDTO> = bikeRepo.getAvailableBikes().map { util.mapBikeToDTO(it) }.toList()
+    fun getAvailableBikes() : List<BikeDTO> = bikeRepo.getAvailableBikes().map { it.mapBikeToDTO() }.toList()
 
-    fun getAvailableBikesByType(type: BikeType) : List<BikeDTO> = bikeRepo.getAvailableBikesByType(type.name).map { util.mapBikeToDTO(it) }.toList()
+    fun getAvailableBikesByType(type: BikeType) : List<BikeDTO> = bikeRepo.getAvailableBikesByType(type.name).map { it.mapBikeToDTO() }.toList()
 
     fun countBikesByType(type: BikeType) : Int = bikeRepo.countBikesByType(type.name)
 
     fun addBike(req: BikeCreateRequest): BikeDTO {
         util.verifyBikePlate(req.plate, req.type)
         val newBike = Bike()
-        util.mapBikeCreateToEntity(newBike, req)
+        newBike.mapBikeCreateToEntity(req)
         bikeRepo.save(newBike)
-        return util.mapBikeToDTO(newBike)
+        return newBike.mapBikeToDTO()
     }
 
     fun updateBike(id: UUID, req: BikeUpdateRequest, capacity: Int?): BikeDTO {
@@ -70,8 +69,7 @@ class BikeServices(private val util: BikeUtility) {
                 ReflectionUtils.setField(field, targetBike, prop.get(req))
             }
         }
-        val savedBike: Bike = bikeRepo.save(targetBike)
-        return util.mapBikeToDTO(savedBike)
+        return bikeRepo.save(targetBike).mapBikeToDTO()
     }
 
     fun deleteBike(plate: String) {
