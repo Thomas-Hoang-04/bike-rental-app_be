@@ -1,27 +1,20 @@
 package com.cnpm.bikerentalapp.bike.controller
 
-import com.cnpm.bikerentalapp.bike.model.httprequest.BikeCreateRequest
+
 import com.cnpm.bikerentalapp.bike.model.dto.BikeDTO
+import com.cnpm.bikerentalapp.bike.model.httprequest.BikeCreateRequest
 import com.cnpm.bikerentalapp.bike.model.httprequest.BikeUpdateRequest
 import com.cnpm.bikerentalapp.bike.model.httpresponse.BikeQueryResponse
 import com.cnpm.bikerentalapp.bike.model.httpresponse.BikeUpdateResponse
 import com.cnpm.bikerentalapp.bike.model.types.BikeType
 import com.cnpm.bikerentalapp.bike.services.BikeServices
+import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import com.cnpm.bikerentalapp.station.services.StationServices
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-
-
-import java.util.UUID
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 @RequestMapping("/api/bike")
@@ -38,15 +31,15 @@ class BikeController {
         val bikes: List<BikeDTO> = bikeServices.getAllBikes()
         return ResponseEntity.ok()
             .header("Title", "BikeList")
-            .body(BikeQueryResponse("all", mapOf(), bikes))
+            .body(BikeQueryResponse("all", bikes.size, mapOf(), bikes))
     }
 
     @GetMapping("/id/{id}")
     fun getBikesByID(@Validated @PathVariable id: UUID) : ResponseEntity<BikeQueryResponse<UUID>> {
-        val bike: BikeDTO = bikeServices.getBikeById(id)
+        val bike: BikeDTO = bikeServices.getBikeByID(id).mapBikeToDTO()
         return ResponseEntity.ok()
             .header("Title", "Bike")
-            .body(BikeQueryResponse("id", mapOf("id" to id), listOf(bike)))
+            .body(BikeQueryResponse("id", 1 ,mapOf("id" to id), listOf(bike)))
     }
 
     @GetMapping("/plate/{plate}")
@@ -54,7 +47,7 @@ class BikeController {
         val bike: BikeDTO = bikeServices.getBikeByPlate(plate)
         return ResponseEntity.ok()
             .header("Title", "Bike by plate $plate")
-            .body(BikeQueryResponse("plate", mapOf("plate" to plate), listOf(bike)))
+            .body(BikeQueryResponse("plate", 1, mapOf("plate" to plate), listOf(bike)))
     }
 
     @GetMapping("/{type}")
@@ -62,7 +55,7 @@ class BikeController {
         val bikes: List<BikeDTO> = bikeServices.getBikeByType(type)
         return ResponseEntity.ok()
             .header("Title", "BikeList by type $type")
-            .body(BikeQueryResponse("type", mapOf("type" to type), bikes))
+            .body(BikeQueryResponse("type", bikes.size, mapOf("type" to type), bikes))
     }
 
     @GetMapping("/available")
@@ -70,7 +63,7 @@ class BikeController {
         val bikes: List<BikeDTO> = bikeServices.getAvailableBikes()
         return ResponseEntity.ok()
             .header("Title", "AvailableBikeList")
-            .body(BikeQueryResponse("status", mapOf("status" to "available"), bikes))
+            .body(BikeQueryResponse("status", bikes.size, mapOf("status" to "available"), bikes))
     }
 
     @GetMapping("/available/{type}")
@@ -78,7 +71,7 @@ class BikeController {
         val bikes: List<BikeDTO> = bikeServices.getAvailableBikesByType(type)
         return ResponseEntity.ok()
             .header("Title", "AvailableBikeList by type $type")
-            .body(BikeQueryResponse("status", mapOf("status" to "available", "type" to type.name), bikes))
+            .body(BikeQueryResponse("status", bikes.size, mapOf("status" to "available", "type" to type.name), bikes))
     }
 
     @GetMapping("/count/{type}")
@@ -91,10 +84,11 @@ class BikeController {
 
     @PostMapping("/add")
     fun addBike(@Validated @RequestBody bike: BikeCreateRequest) : ResponseEntity<BikeUpdateResponse> {
-        val newBike: BikeDTO = bikeServices.addBike(bike)
+        val station: BikeStation? = if (bike.location != null) stationServices.getStationByID(bike.location) else null
+        val newBike: BikeDTO = bikeServices.addBike(bike, station)
         return ResponseEntity.ok()
             .header("Title", "BikeAdded")
-            .body(BikeUpdateResponse("add", "success", newBike))
+            .body(BikeUpdateResponse("add", "success", target = newBike))
     }
 
     @PatchMapping("/update")
@@ -104,7 +98,7 @@ class BikeController {
         val updatedBike: BikeDTO = bikeServices.updateBike(id, bike, capacity)
         return ResponseEntity.ok()
             .header("Title", "BikeUpdated")
-            .body(BikeUpdateResponse("update", "success", updatedBike))
+            .body(BikeUpdateResponse("update", "success", target = updatedBike))
     }
 
     @DeleteMapping("/delete/{plate}")
@@ -112,6 +106,6 @@ class BikeController {
         bikeServices.deleteBike(plate)
         return ResponseEntity.ok()
             .header("Title", "BikeDeleted")
-            .body(BikeUpdateResponse("delete", "success", null))
+            .body(BikeUpdateResponse("delete", "success", target = null))
     }
 }

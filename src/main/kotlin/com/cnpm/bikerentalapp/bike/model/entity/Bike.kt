@@ -39,11 +39,12 @@ class Bike {
     @JoinColumn(name = "bike_location", nullable = true, referencedColumnName = "station_id")
     var location: BikeStation? = null
 
-    fun mapBikeCreateToEntity(req: BikeCreateRequest) {
+    fun mapBikeCreateToEntity(req: BikeCreateRequest, location: BikeStation?) {
         this.plate = req.plate
         this.type = req.type
         this.battery = req.battery ?: this.battery
         this.status = req.status ?: this.status
+        this.location = location
     }
 
     fun mapBikeToDTO() = BikeDTO(

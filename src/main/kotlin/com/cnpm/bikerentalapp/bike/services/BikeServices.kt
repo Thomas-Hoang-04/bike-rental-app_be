@@ -8,6 +8,7 @@ import com.cnpm.bikerentalapp.bike.model.types.BikeType
 import com.cnpm.bikerentalapp.bike.model.utility.BikeUtility
 import com.cnpm.bikerentalapp.bike.repository.BikeRepository
 import com.cnpm.bikerentalapp.exception.model.DataNotFoundException
+import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
@@ -23,9 +24,9 @@ class BikeServices(private val util: BikeUtility) {
 
     fun getAllBikes() : List<BikeDTO> = bikeRepo.findAll().map { it.mapBikeToDTO() }.toList()
 
-    fun getBikeById(id: UUID) : BikeDTO {
+    fun getBikeByID(id: UUID) : Bike {
         util.checkBikeExistsByID(id)
-        return bikeRepo.findById(id).get().mapBikeToDTO()
+        return bikeRepo.findById(id).get()
     }
 
     fun getBikeByPlate(plate: String) : BikeDTO {
@@ -48,10 +49,10 @@ class BikeServices(private val util: BikeUtility) {
 
     fun countBikesByType(type: BikeType) : Int = bikeRepo.countBikesByType(type.name)
 
-    fun addBike(req: BikeCreateRequest): BikeDTO {
+    fun addBike(req: BikeCreateRequest, location: BikeStation?): BikeDTO {
         util.verifyBikePlate(req.plate, req.type)
         val newBike = Bike()
-        newBike.mapBikeCreateToEntity(req)
+        newBike.mapBikeCreateToEntity(req, location)
         bikeRepo.save(newBike)
         return newBike.mapBikeToDTO()
     }

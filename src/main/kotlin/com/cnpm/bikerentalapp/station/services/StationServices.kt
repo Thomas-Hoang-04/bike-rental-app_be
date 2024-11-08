@@ -26,9 +26,9 @@ class StationServices(private val util: StationUtility) {
     fun getAllStations() : List<StationDTO> = stationRepo.findAll().map {
         it.mapStationToDTO() }.toList()
 
-    fun getStationByID(id: UUID) : StationDTO {
+    fun getStationByID(id: UUID): BikeStation {
         util.checkStationExistsByID(id)
-        return stationRepo.findById(id).get().mapStationToDTO()
+        return stationRepo.findById(id).get()
     }
 
     fun getStationByRegionID(regionID: String, regionNum: Int) : StationDTO {
@@ -83,7 +83,6 @@ class StationServices(private val util: StationUtility) {
 
     fun deleteStation(req: StationDeleteRequest) {
         if (req.stationID != null) {
-            util.checkStationExistsByID(req.stationID)
             stationRepo.deleteById(req.stationID)
         } else {
             val regionID: String = req.regionID ?: stationRepo.getRegionIDByCity(req.city ?: "")

@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.text.DecimalFormat
-import java.util.UUID
+import java.util.*
 
 @RestController
 @RequestMapping("/api/station")
@@ -27,15 +27,15 @@ class StationController {
         val stations: List<StationDTO> = stationServices.getAllStations()
         return ResponseEntity.ok()
             .header("Title", "StationList")
-            .body(StationQueryResponse("all", mapOf(), stations))
+            .body(StationQueryResponse("all", stations.size, mapOf() ,stations))
     }
 
     @GetMapping("/id/{id}")
     fun getStationByID(@Validated @PathVariable id: UUID) : ResponseEntity<StationQueryResponse<UUID>> {
-        val station: StationDTO = stationServices.getStationByID(id)
+        val station: StationDTO = stationServices.getStationByID(id).mapStationToDTO()
         return ResponseEntity.ok()
             .header("Title", "Station")
-            .body(StationQueryResponse("id", mapOf("id" to id), listOf(station)))
+            .body(StationQueryResponse("id", 1, mapOf("id" to id), listOf(station)))
     }
 
     @GetMapping("/region/{regionID}/{regionNum}")
@@ -43,7 +43,7 @@ class StationController {
         val station: StationDTO = stationServices.getStationByRegionID(regionID, regionNum)
         return ResponseEntity.ok()
             .header("Title", "Station by region $regionID${DecimalFormat("000").format(regionNum)}")
-            .body(StationQueryResponse("region", mapOf("regionID" to regionID, "regionNum" to regionNum.toString()), listOf(station)))
+            .body(StationQueryResponse("region", 1, mapOf("regionID" to regionID, "regionNum" to regionNum.toString()), listOf(station)))
     }
 
     @GetMapping("/region/{regionID}")
@@ -51,7 +51,7 @@ class StationController {
         val stations: List<StationDTO> = stationServices.getStationsByRegion(regionID)
         return ResponseEntity.ok()
             .header("Title", "Stations by region $regionID")
-            .body(StationQueryResponse("region", mapOf("regionID" to regionID), stations))
+            .body(StationQueryResponse("region", stations.size, mapOf("regionID" to regionID), stations))
     }
 
     @GetMapping("/region")
@@ -59,7 +59,7 @@ class StationController {
         val stations: List<StationDTO> = stationServices.getStationsByCity(city)
         return ResponseEntity.ok()
             .header("Title", "Stations by city")
-            .body(StationQueryResponse("city", mapOf("city" to city), stations))
+            .body(StationQueryResponse("city", stations.size, mapOf("city" to city), stations))
     }
 
     @GetMapping("/available")
@@ -67,7 +67,7 @@ class StationController {
         val stations: List<StationDTO> = stationServices.getAvailableStations()
         return ResponseEntity.ok()
             .header("Title", "AvailableStationList")
-            .body(StationQueryResponse("status", mapOf("status" to "available"), stations))
+            .body(StationQueryResponse("status", stations.size, mapOf("status" to "available"), stations))
     }
 
     @GetMapping("/nearby")
@@ -75,7 +75,7 @@ class StationController {
         val stations: List<StationDTO> = stationServices.getNearbyStations(req.latitude, req.longitude, req.radius)
         return ResponseEntity.ok()
             .header("Title", "NearbyStationList")
-            .body(StationQueryResponse("nearby", mapOf("latitude" to req.latitude, "longitude" to req.longitude, "radius" to req.radius), stations))
+            .body(StationQueryResponse("nearby", stations.size, mapOf("latitude" to req.latitude, "longitude" to req.longitude, "radius" to req.radius), stations))
     }
 
     @PostMapping("/add")
@@ -83,7 +83,7 @@ class StationController {
         val station: StationDTO = stationServices.addStation(req)
         return ResponseEntity.ok()
             .header("Title", "Station added")
-            .body(StationUpdateResponse("add", "success", station))
+            .body(StationUpdateResponse("add", "success", target = station))
     }
 
     @PatchMapping("/update")
@@ -91,7 +91,7 @@ class StationController {
         val station: StationDTO = stationServices.updateStation(req)
         return ResponseEntity.ok()
             .header("Title", "Station updated")
-            .body(StationUpdateResponse("update", "success", station))
+            .body(StationUpdateResponse("update", "success", target = station))
     }
 
     @DeleteMapping("/delete")
@@ -99,6 +99,6 @@ class StationController {
         stationServices.deleteStation(req)
         return ResponseEntity.ok()
             .header("Title", "Station deleted")
-            .body(StationUpdateResponse("delete", "success", null))
+            .body(StationUpdateResponse("delete", "success", target = null))
     }
 }
