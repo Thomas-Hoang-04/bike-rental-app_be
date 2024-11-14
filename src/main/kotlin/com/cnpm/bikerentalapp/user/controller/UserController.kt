@@ -1,37 +1,32 @@
 package com.cnpm.bikerentalapp.user.controller
 
-import com.cnpm.bikerentalapp.config.jwt.JWTManager
-import com.cnpm.bikerentalapp.user.model.httprequest.LoginRequest
-import com.cnpm.bikerentalapp.user.model.httpresponse.LoginResponse
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.validation.annotation.Validated
+import com.cnpm.bikerentalapp.config.httpresponse.QueryResponse
+import com.cnpm.bikerentalapp.user.model.dto.UserDTO
+import com.cnpm.bikerentalapp.user.services.UserServices
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 @RestController
-@RequestMapping("/api/auth")
-class UserController {
-
-    @Autowired
-    private lateinit var jwtManager: JWTManager
-
-    @GetMapping("/test")
-    fun test(): String {
-        return "If you see, part 2 completed"
+@RequestMapping("/api/user")
+class UserController(
+    private val userServices: UserServices,
+) {
+    @GetMapping("/all")
+    fun getAllUsers() : ResponseEntity<QueryResponse<Unit, UserDTO>> {
+        val users: List<UserDTO> = userServices.getAllUsers()
+        return ResponseEntity.ok()
+            .header("Title", "UserList")
+            .body(QueryResponse("all", users.size, mapOf(), users))
     }
 
-    @PostMapping("/login")
-    fun login(@Validated @RequestBody req: LoginRequest): LoginResponse {
-        val token = jwtManager.issue(
-            UUID.fromString("0ff2c460-06c7-4aca-ad4e-cdb3ef7f6a88"),
-            req.username,
-            listOf("USER"))
-        return LoginResponse(token)
+    @GetMapping("/{username}")
+    fun getUserByUsername(@PathVariable("username") username: String): ResponseEntity<QueryResponse<String, UserDTO>> {
+        val user: UserDTO = userServices.getUserByUsername(username).mapUserToDTO()
+        return ResponseEntity.ok()
+            .header("Title", "User")
+            .body(QueryResponse("get", 1, mapOf("username" to username), listOf(user)))
     }
-
-
 }

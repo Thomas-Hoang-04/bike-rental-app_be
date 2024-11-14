@@ -4,23 +4,24 @@ import com.cnpm.bikerentalapp.bike.model.dto.BikeDTO
 import com.cnpm.bikerentalapp.bike.model.entity.Bike
 import com.cnpm.bikerentalapp.bike.model.httprequest.BikeCreateRequest
 import com.cnpm.bikerentalapp.bike.model.httprequest.BikeUpdateRequest
+import com.cnpm.bikerentalapp.bike.model.types.BikeStatus
 import com.cnpm.bikerentalapp.bike.model.types.BikeType
 import com.cnpm.bikerentalapp.bike.model.utility.BikeUtility
 import com.cnpm.bikerentalapp.bike.repository.BikeRepository
-import com.cnpm.bikerentalapp.exception.model.DataNotFoundException
+import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.station.model.entity.BikeStation
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
-import java.util.*
+import java.util.UUID
+import java.util.Optional
 import kotlin.reflect.full.memberProperties
 
 @Service
-class BikeServices(private val util: BikeUtility) {
-
-    @Autowired
-    private lateinit var bikeRepo: BikeRepository
+class BikeServices(
+    private val util: BikeUtility,
+    private val bikeRepo: BikeRepository
+) {
 
     fun getAllBikes() : List<BikeDTO> = bikeRepo.findAll().map { it.mapBikeToDTO() }.toList()
 
@@ -51,16 +52,21 @@ class BikeServices(private val util: BikeUtility) {
 
     fun addBike(req: BikeCreateRequest, location: BikeStation?): BikeDTO {
         util.verifyBikePlate(req.plate, req.type)
-        val newBike = Bike()
-        newBike.mapBikeCreateToEntity(req, location)
+        val newBike = Bike(
+            plate = req.plate,
+            type = req.type,
+            location = location,
+            battery = req.battery ?: 100,
+            status = req.status ?: BikeStatus.AVAILABLE
+        )
         bikeRepo.save(newBike)
         return newBike.mapBikeToDTO()
     }
 
     fun updateBike(id: UUID, req: BikeUpdateRequest, capacity: Int?): BikeDTO {
         val targetBike: Bike = bikeRepo.findById(id).orElseThrow { DataNotFoundException("Bike with id $id not found") }
-        if (req.newPlate != null) util.verifyBikePlate(req.newPlate, req.type ?: targetBike.type)
-        if (req.status != null) util.verifyBikeStatus(req.status, req.type ?: targetBike.type)
+        if (req.newPlate != null) util.verifyBikePlate(req.newPlate, req.type ?: targetBike.publicType)
+        if (req.status != null) util.verifyBikeStatus(req.status, req.type ?: targetBike.publicType)
         if (capacity != null) util.checkAvailableSpaceByLocation(req.location!!, capacity)
         for (prop in BikeUpdateRequest::class.memberProperties) {
             if (prop.name == "plate") continue

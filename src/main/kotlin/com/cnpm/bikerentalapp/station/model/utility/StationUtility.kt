@@ -1,9 +1,9 @@
 package com.cnpm.bikerentalapp.station.model.utility
 
-import com.cnpm.bikerentalapp.exception.model.DataNotFoundException
+import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.station.repository.StationRepository
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.UUID
 
 @Component
 class StationUtility(

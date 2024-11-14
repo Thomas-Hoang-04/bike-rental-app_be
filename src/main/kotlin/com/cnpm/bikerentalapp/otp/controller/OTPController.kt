@@ -6,7 +6,6 @@ import com.cnpm.bikerentalapp.otp.model.OTPStatus
 import com.cnpm.bikerentalapp.otp.model.OTPValidationRequest
 import com.cnpm.bikerentalapp.otp.services.OTPService
 import jakarta.validation.Valid
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,10 +15,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/otp")
-class OTPController {
-
-    @Autowired
-    private lateinit var otpService: OTPService
+class OTPController(
+    private val otpService: OTPService
+) {
 
     @PostMapping("/send")
     fun sendOTP(@Valid @RequestBody req: OTPRequest): ResponseEntity<OTPResponse> {

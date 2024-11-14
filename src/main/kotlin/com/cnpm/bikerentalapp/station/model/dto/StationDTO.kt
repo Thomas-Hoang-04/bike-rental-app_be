@@ -3,7 +3,7 @@ package com.cnpm.bikerentalapp.station.model.dto
 import com.cnpm.bikerentalapp.bike.model.dto.BikeDTO
 import com.cnpm.bikerentalapp.station.model.types.StationStatus
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.*
+import java.util.UUID
 
 data class StationDTO(
     @JsonProperty("station_id")

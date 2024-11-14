@@ -1,27 +1,27 @@
 package com.cnpm.bikerentalapp.station.services
 
-import com.cnpm.bikerentalapp.exception.model.DataNotFoundException
-import com.cnpm.bikerentalapp.exception.model.InvalidUpdate
+import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
+import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import com.cnpm.bikerentalapp.station.model.dto.StationDTO
 import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import com.cnpm.bikerentalapp.station.model.httprequest.StationCreateRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationDeleteRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationUpdateRequest
+import com.cnpm.bikerentalapp.station.model.types.StationStatus
 import com.cnpm.bikerentalapp.station.model.utility.StationUtility
 import com.cnpm.bikerentalapp.station.repository.StationRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
 import java.text.DecimalFormat
-import java.util.*
+import java.util.UUID
 import kotlin.reflect.full.memberProperties
 
 @Service
-class StationServices(private val util: StationUtility) {
-
-    @Autowired
-    private lateinit var stationRepo: StationRepository
+class StationServices(
+    private val util: StationUtility,
+    private val stationRepo: StationRepository
+) {
 
     fun getAllStations() : List<StationDTO> = stationRepo.findAll().map {
         it.mapStationToDTO() }.toList()
@@ -53,11 +53,19 @@ class StationServices(private val util: StationUtility) {
     }
 
     fun addStation(req: StationCreateRequest) : StationDTO {
-        val newStation = BikeStation()
         val regionCodex: Pair<String, Int> = util.extractRegionCodex(req.city, req.regionID)
         if (!util.verifyStationLocation(req.latitude, req.longitude))
             throw InvalidUpdate("Invalid location coordinates")
-        newStation.mapStationCreateToEntity(req, regionCodex)
+        val newStation = BikeStation(
+            regionID = regionCodex.first,
+            regionNum = regionCodex.second,
+            latitude = req.latitude,
+            longitude = req.longitude,
+            name = req.name,
+            address = req.address,
+            capacity = req.capacity ?: 0,
+            status = req.status ?: StationStatus.ACTIVE
+        )
         stationRepo.save(newStation)
         return newStation.mapStationToDTO()
     }

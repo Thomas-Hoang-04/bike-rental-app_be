@@ -1,1 +1,1 @@
-rootProject.name = "CNPM"
+rootProject.name = "Bike Rental App (BE)"

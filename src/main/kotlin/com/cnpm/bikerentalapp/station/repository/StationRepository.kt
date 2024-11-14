@@ -4,10 +4,13 @@ import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import org.springframework.stereotype.Repository
 import java.util.UUID
 import java.util.Optional
 
+@Repository
 interface StationRepository: JpaRepository<BikeStation, UUID> {
+
     @Query("SELECT * FROM bike_station b WHERE b.status = 'ACTIVE'::bike_station_status", nativeQuery = true)
     fun getAvailableStations(): List<BikeStation>
 

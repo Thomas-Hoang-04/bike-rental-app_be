@@ -3,10 +3,10 @@ package com.cnpm.bikerentalapp.bike.model.utility
 import com.cnpm.bikerentalapp.bike.model.types.BikeStatus
 import com.cnpm.bikerentalapp.bike.model.types.BikeType
 import com.cnpm.bikerentalapp.bike.repository.BikeRepository
-import com.cnpm.bikerentalapp.exception.model.DataNotFoundException
-import com.cnpm.bikerentalapp.exception.model.InvalidUpdate
+import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
+import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.UUID
 
 @Component
 class BikeUtility(private val bikeRepo: BikeRepository) {
