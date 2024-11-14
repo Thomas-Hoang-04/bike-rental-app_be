@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.example"
-version = "0.0.2-SNAPSHOT"
+version = "0.1.1-alpha"
 
 java {
     toolchain {
@@ -19,6 +19,8 @@ repositories {
     mavenCentral()
 }
 
+extra["spring-security.version"] = "6.3.4"
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -29,6 +31,10 @@ dependencies {
     implementation("org.projectlombok:lombok")
     implementation("org.locationtech.jts:jts-core:1.20.0")
     implementation("org.hibernate:hibernate-spatial:6.6.1.Final")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("com.auth0:java-jwt:4.4.0")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    testImplementation("org.springframework.security:spring-security-test")
     runtimeOnly("org.postgresql:postgresql")
     implementation("com.twilio.sdk:twilio:10.6.2") {
         exclude(group = "commons-logging", module = "commons-logging")
@@ -37,6 +43,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 kotlin {

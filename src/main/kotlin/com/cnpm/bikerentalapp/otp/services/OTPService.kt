@@ -8,15 +8,14 @@ import com.cnpm.bikerentalapp.otp.model.OTPValidationRequest
 import com.twilio.rest.api.v2010.account.Message
 
 import com.twilio.type.PhoneNumber
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.text.DecimalFormat
 import kotlin.random.Random
 
 @Service
-class OTPService {
-    @Autowired
-    private lateinit var twilioConfig: TwilioConfig
+class OTPService(
+    private val twilioConfig: TwilioConfig
+) {
     private val otpMap: HashMap<String, Pair<String, Long>> = HashMap()
 
     private fun generateOTP(): String = DecimalFormat("00000").format(Random.nextInt(100000))

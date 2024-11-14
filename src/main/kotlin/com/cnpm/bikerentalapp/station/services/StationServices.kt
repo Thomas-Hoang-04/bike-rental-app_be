@@ -1,64 +1,73 @@
 package com.cnpm.bikerentalapp.station.services
 
+import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
+import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import com.cnpm.bikerentalapp.station.model.dto.StationDTO
 import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import com.cnpm.bikerentalapp.station.model.httprequest.StationCreateRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationDeleteRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationUpdateRequest
+import com.cnpm.bikerentalapp.station.model.types.StationStatus
 import com.cnpm.bikerentalapp.station.model.utility.StationUtility
-import com.cnpm.bikerentalapp.station.repositories.StationRepository
-import com.cnpm.bikerentalapp.utility.exception.DataNotFoundException
-import com.cnpm.bikerentalapp.utility.exception.InvalidUpdate
-import org.springframework.beans.factory.annotation.Autowired
+import com.cnpm.bikerentalapp.station.repository.StationRepository
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
 import java.text.DecimalFormat
-import java.util.*
+import java.util.UUID
 import kotlin.reflect.full.memberProperties
 
 @Service
-class StationServices(private val util: StationUtility) {
+class StationServices(
+    private val util: StationUtility,
+    private val stationRepo: StationRepository
+) {
 
-    @Autowired
-    private lateinit var stationRepo: StationRepository
+    fun getAllStations() : List<StationDTO> = stationRepo.findAll().map {
+        it.mapStationToDTO() }.toList()
 
-    fun getAllStations() : List<StationDTO> = stationRepo.findAll().stream().map {
-        util.mapStationToDTO(it) }.toList()
-
-    fun getStationByID(id: UUID) : StationDTO {
+    fun getStationByID(id: UUID): BikeStation {
         util.checkStationExistsByID(id)
-        return stationRepo.findById(id).get().let { util.mapStationToDTO(it) }
+        return stationRepo.findById(id).get()
     }
 
     fun getStationByRegionID(regionID: String, regionNum: Int) : StationDTO {
         val station = stationRepo.getStationByRegionID(regionID, regionNum).orElseThrow {
             throw DataNotFoundException("Station with regionID $regionID${DecimalFormat("000").format(regionNum)} not found")
         }
-        return util.mapStationToDTO(station)
+        return station.mapStationToDTO()
     }
 
-    fun getStationsByRegion(regionID: String) : List<StationDTO> = stationRepo.getStationsByRegion(regionID).stream().map {
-        util.mapStationToDTO(it) }.toList()
+    fun getStationsByRegion(regionID: String) : List<StationDTO> = stationRepo.getStationsByRegion(regionID).map {
+        it.mapStationToDTO() }.toList()
 
-    fun getStationsByCity(city: String) : List<StationDTO> = stationRepo.getStationsByCity(city).stream().map {
-        util.mapStationToDTO(it) }.toList()
+    fun getStationsByCity(city: String) : List<StationDTO> = stationRepo.getStationsByCity(city).map {
+        it.mapStationToDTO() }.toList()
 
-    fun getAvailableStations() : List<StationDTO> = stationRepo.getAvailableStations().stream().map {
-        util.mapStationToDTO(it) }.toList()
+    fun getAvailableStations() : List<StationDTO> = stationRepo.getAvailableStations().map {
+        it.mapStationToDTO() }.toList()
 
     fun getNearbyStations(lat: Double, long: Double, radius: Double) : List<StationDTO> {
         val stations = stationRepo.getNearbyStations(lat, long, radius)
-        return stations.stream().map { util.mapStationToDTO(it) }.toList()
+        return stations.map { it.mapStationToDTO() }.toList()
     }
 
     fun addStation(req: StationCreateRequest) : StationDTO {
-        val newStation = BikeStation()
+        val regionCodex: Pair<String, Int> = util.extractRegionCodex(req.city, req.regionID)
         if (!util.verifyStationLocation(req.latitude, req.longitude))
             throw InvalidUpdate("Invalid location coordinates")
-        util.mapStationCreateToEntity(newStation, req)
+        val newStation = BikeStation(
+            regionID = regionCodex.first,
+            regionNum = regionCodex.second,
+            latitude = req.latitude,
+            longitude = req.longitude,
+            name = req.name,
+            address = req.address,
+            capacity = req.capacity ?: 0,
+            status = req.status ?: StationStatus.ACTIVE
+        )
         stationRepo.save(newStation)
-        return util.mapStationToDTO(newStation)
+        return newStation.mapStationToDTO()
     }
 
     fun updateStation(req: StationUpdateRequest): StationDTO {
@@ -75,14 +84,13 @@ class StationServices(private val util: StationUtility) {
                 ReflectionUtils.setField(field, targetStation, prop.get(req))
             }
         }
-        targetStation.geoLocation = util.createGeoLocation(targetStation.latitude, targetStation.longitude)
-        val savedStation: BikeStation = stationRepo.save(targetStation)
-        return util.mapStationToDTO(savedStation)
+        targetStation.createGeoLocation()
+        return stationRepo.save(targetStation).mapStationToDTO()
+
     }
 
     fun deleteStation(req: StationDeleteRequest) {
         if (req.stationID != null) {
-            util.checkStationExistsByID(req.stationID)
             stationRepo.deleteById(req.stationID)
         } else {
             val regionID: String = req.regionID ?: stationRepo.getRegionIDByCity(req.city ?: "")
