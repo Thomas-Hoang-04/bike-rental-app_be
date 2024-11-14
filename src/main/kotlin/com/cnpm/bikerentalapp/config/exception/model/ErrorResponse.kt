@@ -1,4 +1,4 @@
-package com.cnpm.bikerentalapp.exception.model
+package com.cnpm.bikerentalapp.config.exception.model
 
 data class ErrorResponse(
     val timestamp: String,
