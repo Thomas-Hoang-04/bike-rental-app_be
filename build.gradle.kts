@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.example"
-version = "0.0.3-SNAPSHOT"
+version = "0.1.1-alpha"
 
 java {
     toolchain {
@@ -43,6 +43,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 kotlin {
