@@ -5,14 +5,18 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
-import java.util.UUID
-import java.util.Optional
+import java.util.*
 
 @Repository
 interface StationRepository: JpaRepository<BikeStation, UUID> {
 
     @Query("SELECT * FROM bike_station b WHERE b.status = 'ACTIVE'::bike_station_status", nativeQuery = true)
     fun getAvailableStations(): List<BikeStation>
+
+    @Query("""SELECT * FROM bike_station b 
+        WHERE b.status = 'ACTIVE'::bike_station_status
+        AND b.region_id = :regionID""", nativeQuery = true)
+    fun getAvailableStationsByRegion(@Param("regionID") regionID: String): List<BikeStation>
 
     @Query("SELECT MAX(region_num) FROM bike_station b where b.region_id = :id", nativeQuery = true)
     fun getRegionalStationMaxNum(@Param("id") regionID: String): Optional<Int>

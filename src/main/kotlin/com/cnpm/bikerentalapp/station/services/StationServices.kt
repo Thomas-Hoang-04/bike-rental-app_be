@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
 import java.text.DecimalFormat
-import java.util.UUID
+import java.util.*
 import kotlin.reflect.full.memberProperties
 
 @Service
@@ -26,9 +26,8 @@ class StationServices(
     fun getAllStations() : List<StationDTO> = stationRepo.findAll().map {
         it.mapStationToDTO() }.toList()
 
-    fun getStationByID(id: UUID): BikeStation {
-        util.checkStationExistsByID(id)
-        return stationRepo.findById(id).get()
+    fun getStationByID(id: UUID): BikeStation = stationRepo.findById(id).orElseThrow {
+        throw DataNotFoundException("Station with ID $id not found")
     }
 
     fun getStationByRegionID(regionID: String, regionNum: Int) : StationDTO {
@@ -38,14 +37,17 @@ class StationServices(
         return station.mapStationToDTO()
     }
 
-    fun getStationsByRegion(regionID: String) : List<StationDTO> = stationRepo.getStationsByRegion(regionID).map {
-        it.mapStationToDTO() }.toList()
+    fun getStationsByRegion(regionID: String) : List<StationDTO>
+        = stationRepo.getStationsByRegion(regionID).map { it.mapStationToDTO() }.toList()
 
-    fun getStationsByCity(city: String) : List<StationDTO> = stationRepo.getStationsByCity(city).map {
-        it.mapStationToDTO() }.toList()
+    fun getStationsByCity(city: String) : List<StationDTO>
+        = stationRepo.getStationsByCity(city).map { it.mapStationToDTO() }.toList()
 
-    fun getAvailableStations() : List<StationDTO> = stationRepo.getAvailableStations().map {
-        it.mapStationToDTO() }.toList()
+    fun getAvailableStations() : List<StationDTO>
+        = stationRepo.getAvailableStations().map { it.mapStationToDTO() }.toList()
+
+    fun getAvailableStationsByRegion(regionID: String) : List<StationDTO>
+        = stationRepo.getAvailableStationsByRegion(regionID).map { it.mapStationToDTO() }.toList()
 
     fun getNearbyStations(lat: Double, long: Double, radius: Double) : List<StationDTO> {
         val stations = stationRepo.getNearbyStations(lat, long, radius)

@@ -31,9 +31,11 @@ class AuthController(
 
         val token = jwtManager.issue(principal.id, principal.username,
             principal.authorities.map { it.authority })
+        val user: UserDTO = userServices.getUserByID(principal.id).mapUserToDTO()
+
         return ResponseEntity.ok()
             .header("Title", "Login successful")
-            .body(LoginResponse(token))
+            .body(LoginResponse(token, user))
     }
 
     @PostMapping("/signup")

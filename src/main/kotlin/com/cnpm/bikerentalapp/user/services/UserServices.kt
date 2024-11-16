@@ -10,6 +10,7 @@ import com.cnpm.bikerentalapp.user.repository.UserCredentialRepository
 import com.cnpm.bikerentalapp.user.utility.UserUtility
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class UserServices(
@@ -19,6 +20,10 @@ class UserServices(
 ) {
 
     fun getAllUsers(): List<UserDTO> = userRepo.findAll().map { it.mapUserToDTO() }.toList()
+
+    fun getUserByID(id: UUID): UserCredential = userRepo.findById(id).orElseThrow {
+        DataNotFoundException("User with ID $id not found")
+    }
 
     fun getUserByUsername(username: String): UserCredential {
         return userRepo.getByUsername(username).orElseThrow {

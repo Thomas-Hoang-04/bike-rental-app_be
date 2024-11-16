@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.text.DecimalFormat
-import java.util.UUID
+import java.util.*
 
 @RestController
 @RequestMapping("/api/station")
@@ -20,7 +20,7 @@ class StationController(
     private val stationServices: StationServices
 ) {
 
-    @GetMapping("/all")
+    @GetMapping("/")
     fun getAllStations() : ResponseEntity<QueryResponse<Unit, StationDTO>> {
         val stations: List<StationDTO> = stationServices.getAllStations()
         return ResponseEntity.ok()
@@ -36,12 +36,12 @@ class StationController(
             .body(QueryResponse("id", 1, mapOf("id" to id), listOf(station)))
     }
 
-    @GetMapping("/region/{regionID}/{regionNum}")
-    fun getStationByRegionID(@Validated @PathVariable regionID: String, @Validated @PathVariable regionNum: Int) : ResponseEntity<QueryResponse<String, StationDTO>> {
-        val station: StationDTO = stationServices.getStationByRegionID(regionID, regionNum)
+    @GetMapping("/region")
+    fun getStationsByCity(@Validated @RequestParam city: String) : ResponseEntity<QueryResponse<String, StationDTO>> {
+        val stations: List<StationDTO> = stationServices.getStationsByCity(city)
         return ResponseEntity.ok()
-            .header("Title", "Station by region $regionID${DecimalFormat("000").format(regionNum)}")
-            .body(QueryResponse("region", 1, mapOf("regionID" to regionID, "regionNum" to regionNum.toString()), listOf(station)))
+            .header("Title", "Stations by city")
+            .body(QueryResponse("city", stations.size, mapOf("city" to city), stations))
     }
 
     @GetMapping("/region/{regionID}")
@@ -52,12 +52,12 @@ class StationController(
             .body(QueryResponse("region", stations.size, mapOf("regionID" to regionID), stations))
     }
 
-    @GetMapping("/region")
-    fun getStationsByCity(@Validated @RequestParam city: String) : ResponseEntity<QueryResponse<String, StationDTO>> {
-        val stations: List<StationDTO> = stationServices.getStationsByCity(city)
+    @GetMapping("/region/{regionID}/{regionNum}")
+    fun getStationByRegionID(@Validated @PathVariable regionID: String, @Validated @PathVariable regionNum: Int) : ResponseEntity<QueryResponse<String, StationDTO>> {
+        val station: StationDTO = stationServices.getStationByRegionID(regionID, regionNum)
         return ResponseEntity.ok()
-            .header("Title", "Stations by city")
-            .body(QueryResponse("city", stations.size, mapOf("city" to city), stations))
+            .header("Title", "Station by region $regionID${DecimalFormat("000").format(regionNum)}")
+            .body(QueryResponse("region", 1, mapOf("regionID" to regionID, "regionNum" to regionNum.toString()), listOf(station)))
     }
 
     @GetMapping("/available")
@@ -66,6 +66,14 @@ class StationController(
         return ResponseEntity.ok()
             .header("Title", "AvailableStationList")
             .body(QueryResponse("status", stations.size, mapOf("status" to "available"), stations))
+    }
+
+    @GetMapping("/available/{regionID}")
+    fun getAvailableStationsByRegion(@Validated @PathVariable regionID: String) : ResponseEntity<QueryResponse<String, StationDTO>> {
+        val stations: List<StationDTO> = stationServices.getAvailableStationsByRegion(regionID)
+        return ResponseEntity.ok()
+            .header("Title", "AvailableStationList by region $regionID")
+            .body(QueryResponse("status", stations.size, mapOf("status" to "available", "regionID" to regionID), stations))
     }
 
     @GetMapping("/nearby")

@@ -3,18 +3,12 @@ package com.cnpm.bikerentalapp.bike.model.utility
 import com.cnpm.bikerentalapp.bike.model.types.BikeStatus
 import com.cnpm.bikerentalapp.bike.model.types.BikeType
 import com.cnpm.bikerentalapp.bike.repository.BikeRepository
-import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import org.springframework.stereotype.Component
-import java.util.UUID
+import java.util.*
 
 @Component
 class BikeUtility(private val bikeRepo: BikeRepository) {
-    fun checkBikeExistsByID(id: UUID) {
-        if (!bikeRepo.existsById(id))
-            throw DataNotFoundException("Bike with id $id not found")
-    }
-
     fun verifyBikePlate(plate: String, type: BikeType) {
         if (plate[0] == 'E' && type == BikeType.ELECTRIC) return
         if (plate[0] == 'X' && type == BikeType.MANUAL) return

@@ -13,8 +13,7 @@ import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
-import java.util.UUID
-import java.util.Optional
+import java.util.*
 import kotlin.reflect.full.memberProperties
 
 @Service
@@ -25,10 +24,8 @@ class BikeServices(
 
     fun getAllBikes() : List<BikeDTO> = bikeRepo.findAll().map { it.mapBikeToDTO() }.toList()
 
-    fun getBikeByID(id: UUID) : Bike {
-        util.checkBikeExistsByID(id)
-        return bikeRepo.findById(id).get()
-    }
+    fun getBikeByID(id: UUID) : Bike
+        = bikeRepo.findById(id).orElseThrow { DataNotFoundException("Bike with ID $id not found") }
 
     fun getBikeByPlate(plate: String) : BikeDTO {
         val bike: Optional<Bike> = bikeRepo.getBikeByPlate(plate)

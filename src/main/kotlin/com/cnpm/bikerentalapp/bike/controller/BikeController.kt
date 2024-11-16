@@ -12,7 +12,7 @@ import com.cnpm.bikerentalapp.station.services.StationServices
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import java.util.UUID
+import java.util.*
 
 @RestController
 @RequestMapping("/api/bike")
@@ -21,7 +21,7 @@ class BikeController(
     private val stationServices: StationServices
 ) {
 
-    @GetMapping("/all")
+    @GetMapping("/")
     fun getAllBikes() : ResponseEntity<QueryResponse<Unit, BikeDTO>> {
         val bikes: List<BikeDTO> = bikeServices.getAllBikes()
         return ResponseEntity.ok()

@@ -3,7 +3,6 @@ package com.cnpm.bikerentalapp.station.model.utility
 import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.station.repository.StationRepository
 import org.springframework.stereotype.Component
-import java.util.UUID
 
 @Component
 class StationUtility(
@@ -20,11 +19,6 @@ class StationUtility(
                DataNotFoundException("Region with id $regionID not found") } + 1
             return Pair(regionID, regionNum)
         }
-    }
-
-    fun checkStationExistsByID(id: UUID) {
-        if (!stationRepo.existsById(id))
-            throw DataNotFoundException("Station with id $id not found")
     }
 
     fun verifyStationLocation(lat: Double, long: Double): Boolean
