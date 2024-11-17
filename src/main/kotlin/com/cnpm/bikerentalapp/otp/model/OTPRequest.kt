@@ -1,6 +1,9 @@
 package com.cnpm.bikerentalapp.otp.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class OTPRequest(
-    val userName: String,
+    val username: String,
+    @JsonProperty("phone_number")
     val phoneNumber: String
 )

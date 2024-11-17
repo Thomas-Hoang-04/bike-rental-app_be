@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val userServices: UserServices,
 ) {
-    @GetMapping("/all")
+    @GetMapping("/")
     fun getAllUsers() : ResponseEntity<QueryResponse<Unit, UserDTO>> {
         val users: List<UserDTO> = userServices.getAllUsers()
         return ResponseEntity.ok()

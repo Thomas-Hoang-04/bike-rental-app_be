@@ -73,11 +73,8 @@ class StationServices(
     }
 
     fun updateStation(req: StationUpdateRequest): StationDTO {
-        val regionID: String = req.regionID ?: stationRepo.getRegionIDByCity(req.city ?: "")
-                .orElseThrow { DataNotFoundException("City $req.city not found") }
-        val targetStation: BikeStation = stationRepo.getStationByRegionID(regionID, req.regionNum).orElseThrow {
-            throw DataNotFoundException("Station with regionID ${req.regionID}${DecimalFormat("000").format(req.regionNum)} not found")
-        }
+        val targetStation: BikeStation = util.retrieveTargetStation(
+            req.stationID, req.city, req.regionID, req.regionNum)
         for (prop in StationUpdateRequest::class.memberProperties) {
             if (prop.name == "regionID" || prop.name == "regionNum" || prop.name == "city") continue
             if (prop.get(req) != null) {
@@ -92,15 +89,8 @@ class StationServices(
     }
 
     fun deleteStation(req: StationDeleteRequest) {
-        if (req.stationID != null) {
-            stationRepo.deleteById(req.stationID)
-        } else {
-            val regionID: String = req.regionID ?: stationRepo.getRegionIDByCity(req.city ?: "")
-                .orElseThrow { DataNotFoundException("City $req.city not found") }
-            val station = stationRepo.getStationByRegionID(regionID, req.regionNum).orElseThrow {
-                throw DataNotFoundException("Station with regionID ${regionID}${DecimalFormat("000").format(req.regionNum)} not found")
-            }
-            stationRepo.delete(station)
-        }
+        val targetStation: BikeStation = util.retrieveTargetStation(
+            req.stationID, req.city, req.regionID, req.regionNum)
+        stationRepo.delete(targetStation)
     }
 }

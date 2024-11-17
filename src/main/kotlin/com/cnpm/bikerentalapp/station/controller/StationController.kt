@@ -28,7 +28,7 @@ class StationController(
             .body(QueryResponse("all", stations.size, mapOf() ,stations))
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     fun getStationByID(@Validated @PathVariable id: UUID) : ResponseEntity<QueryResponse<UUID, StationDTO>> {
         val station: StationDTO = stationServices.getStationByID(id).mapStationToDTO()
         return ResponseEntity.ok()
@@ -36,7 +36,7 @@ class StationController(
             .body(QueryResponse("id", 1, mapOf("id" to id), listOf(station)))
     }
 
-    @GetMapping("/region")
+    @GetMapping("/city")
     fun getStationsByCity(@Validated @RequestParam city: String) : ResponseEntity<QueryResponse<String, StationDTO>> {
         val stations: List<StationDTO> = stationServices.getStationsByCity(city)
         return ResponseEntity.ok()

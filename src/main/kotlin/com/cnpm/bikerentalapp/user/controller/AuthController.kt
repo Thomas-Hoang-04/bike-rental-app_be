@@ -39,11 +39,11 @@ class AuthController(
     }
 
     @PostMapping("/signup")
-    fun addUsers(@Validated @RequestBody req: UserCreateRequest): ResponseEntity<CRUDResponse<UserDTO>> {
-        val registered: UserDTO = userServices.addUser(req)
+    fun addUsers(@Validated @RequestBody req: UserCreateRequest): ResponseEntity<CRUDResponse<Boolean>> {
+        userServices.addUser(req)
         return ResponseEntity.ok()
             .header("Title", "User Registration")
-            .body(CRUDResponse("add", "success", target = registered))
+            .body(CRUDResponse("signup", "success", target = true))
     }
 
 }

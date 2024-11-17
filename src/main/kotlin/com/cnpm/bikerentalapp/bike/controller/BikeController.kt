@@ -69,14 +69,6 @@ class BikeController(
             .body(QueryResponse("status", bikes.size, mapOf("status" to "available", "type" to type.name), bikes))
     }
 
-    @GetMapping("/count/{type}")
-    fun countBikesByType(@Validated @PathVariable type: BikeType) : ResponseEntity<Map<String, String>> {
-        val count: Int = bikeServices.countBikesByType(type)
-        return ResponseEntity.ok()
-            .header("Title", "BikeCount")
-            .body(mapOf("queryBy" to "bike_count", "type" to type.name, "count" to count.toString()))
-    }
-
     @PostMapping("/add")
     fun addBike(@Validated @RequestBody bike: BikeCreateRequest) : ResponseEntity<CRUDResponse<BikeDTO>> {
         val station: BikeStation? = if (bike.location != null) stationServices.getStationByID(bike.location) else null

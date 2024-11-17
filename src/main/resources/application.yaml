@@ -20,6 +20,8 @@ spring:
 
 server:
   port: 443
+  http2:
+    enabled: true
 
 
 

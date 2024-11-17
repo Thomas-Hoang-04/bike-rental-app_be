@@ -1,10 +1,12 @@
 package com.cnpm.bikerentalapp.otp.services
 
+import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.otp.config.TwilioConfig
 import com.cnpm.bikerentalapp.otp.model.OTPRequest
 import com.cnpm.bikerentalapp.otp.model.OTPResponse
 import com.cnpm.bikerentalapp.otp.model.OTPStatus
 import com.cnpm.bikerentalapp.otp.model.OTPValidationRequest
+import com.cnpm.bikerentalapp.user.services.UserServices
 import com.twilio.rest.api.v2010.account.Message
 
 import com.twilio.type.PhoneNumber
@@ -14,7 +16,8 @@ import kotlin.random.Random
 
 @Service
 class OTPService(
-    private val twilioConfig: TwilioConfig
+    private val twilioConfig: TwilioConfig,
+    private val userServices: UserServices
 ) {
     private val otpMap: HashMap<String, Pair<String, Long>> = HashMap()
 
@@ -24,7 +27,8 @@ class OTPService(
 
     fun sendOTP(req: OTPRequest): OTPResponse {
         try {
-            if (otpMap[req.userName] != null && System.currentTimeMillis() - otpMap[req.userName]!!.second < 60000) {
+            userServices.getUserByUsername(req.username)
+            if (otpMap[req.username] != null && System.currentTimeMillis() - otpMap[req.username]!!.second < 60000) {
                 return OTPResponse(OTPStatus.INVALID, "Please wait at least 60 seconds before requesting another OTP")
             }
             val tar = PhoneNumber(req.phoneNumber)
@@ -32,11 +36,12 @@ class OTPService(
             val otp: String = generateOTP()
             val message: String = generateMessage(otp)
             Message.creator(tar, from, message).create()
-            otpMap[req.userName] = Pair(otp, System.currentTimeMillis())
+            otpMap[req.username] = Pair(otp, System.currentTimeMillis())
             return OTPResponse(OTPStatus.SUCCESS, "OTP sent successfully")
+        } catch (e: DataNotFoundException) {
+            return OTPResponse(OTPStatus.INVALID, e.message)
         } catch (e: Exception) {
-            e.printStackTrace()
-            return OTPResponse(OTPStatus.FAILED, e.message ?: "Failed to send OTP")
+            return OTPResponse(OTPStatus.FAILED, e.message ?: "OTP sending failed")
         }
     }
 

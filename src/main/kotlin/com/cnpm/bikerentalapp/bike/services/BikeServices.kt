@@ -45,8 +45,6 @@ class BikeServices(
 
     fun getAvailableBikesByType(type: BikeType) : List<BikeDTO> = bikeRepo.getAvailableBikesByType(type.name).map { it.mapBikeToDTO() }.toList()
 
-    fun countBikesByType(type: BikeType) : Int = bikeRepo.countBikesByType(type.name)
-
     fun addBike(req: BikeCreateRequest, location: BikeStation?): BikeDTO {
         util.verifyBikePlate(req.plate, req.type)
         val newBike = Bike(
