@@ -2,13 +2,12 @@ package com.cnpm.bikerentalapp.bike.controller
 
 import com.cnpm.bikerentalapp.bike.model.dto.BikeDTO
 import com.cnpm.bikerentalapp.bike.model.httprequest.BikeCreateRequest
+import com.cnpm.bikerentalapp.bike.model.httprequest.BikeRenting
 import com.cnpm.bikerentalapp.bike.model.httprequest.BikeUpdateRequest
 import com.cnpm.bikerentalapp.bike.model.types.BikeType
 import com.cnpm.bikerentalapp.bike.services.BikeServices
 import com.cnpm.bikerentalapp.config.httpresponse.CRUDResponse
 import com.cnpm.bikerentalapp.config.httpresponse.QueryResponse
-import com.cnpm.bikerentalapp.station.model.entity.BikeStation
-import com.cnpm.bikerentalapp.station.services.StationServices
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -18,7 +17,6 @@ import java.util.*
 @RequestMapping("/api/bike")
 class BikeController(
     private val bikeServices: BikeServices,
-    private val stationServices: StationServices
 ) {
 
     @GetMapping("/")
@@ -39,7 +37,7 @@ class BikeController(
 
     @GetMapping("/plate/{plate}")
     fun getBikesByPlate(@Validated @PathVariable plate: String) : ResponseEntity<QueryResponse<String, BikeDTO>> {
-        val bike: BikeDTO = bikeServices.getBikeByPlate(plate)
+        val bike: BikeDTO = bikeServices.getBikeByPlate(plate).mapBikeToDTO()
         return ResponseEntity.ok()
             .header("Title", "Bike by plate $plate")
             .body(QueryResponse("plate", 1, mapOf("plate" to plate), listOf(bike)))
@@ -71,18 +69,23 @@ class BikeController(
 
     @PostMapping("/add")
     fun addBike(@Validated @RequestBody bike: BikeCreateRequest) : ResponseEntity<CRUDResponse<BikeDTO>> {
-        val station: BikeStation? = if (bike.location != null) stationServices.getStationByID(bike.location) else null
-        val newBike: BikeDTO = bikeServices.addBike(bike, station)
+        val newBike: BikeDTO = bikeServices.addBike(bike)
         return ResponseEntity.ok()
             .header("Title", "BikeAdded")
             .body(CRUDResponse("add", "success", target = newBike))
     }
 
+    @PatchMapping("/rent")
+    fun rentBike(@Validated @RequestBody bike: BikeRenting) : ResponseEntity<CRUDResponse<BikeDTO>> {
+        val rentedBike: BikeDTO = bikeServices.rentingBike(bike)
+        return ResponseEntity.ok()
+            .header("Title", "BikeRented")
+            .body(CRUDResponse("rent", "success", target = rentedBike))
+    }
+
     @PatchMapping("/update")
     fun updateBike(@Validated @RequestBody bike: BikeUpdateRequest) : ResponseEntity<CRUDResponse<BikeDTO>> {
-        val id: UUID = bikeServices.getBikeIdByPlate(bike.plate)
-        val capacity: Int? = if (bike.location != null) stationServices.getStationByID(bike.location).publicCapacity else null
-        val updatedBike: BikeDTO = bikeServices.updateBike(id, bike, capacity)
+        val updatedBike: BikeDTO = bikeServices.updateBike(bike)
         return ResponseEntity.ok()
             .header("Title", "BikeUpdated")
             .body(CRUDResponse("update", "success", target = updatedBike))

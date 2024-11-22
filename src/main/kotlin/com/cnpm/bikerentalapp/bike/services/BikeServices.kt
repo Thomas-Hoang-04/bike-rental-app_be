@@ -3,13 +3,19 @@ package com.cnpm.bikerentalapp.bike.services
 import com.cnpm.bikerentalapp.bike.model.dto.BikeDTO
 import com.cnpm.bikerentalapp.bike.model.entity.Bike
 import com.cnpm.bikerentalapp.bike.model.httprequest.BikeCreateRequest
+import com.cnpm.bikerentalapp.bike.model.httprequest.BikeRenting
 import com.cnpm.bikerentalapp.bike.model.httprequest.BikeUpdateRequest
+import com.cnpm.bikerentalapp.bike.model.types.BikeAction
 import com.cnpm.bikerentalapp.bike.model.types.BikeStatus
 import com.cnpm.bikerentalapp.bike.model.types.BikeType
 import com.cnpm.bikerentalapp.bike.model.utility.BikeUtility
 import com.cnpm.bikerentalapp.bike.repository.BikeRepository
 import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
+import com.cnpm.bikerentalapp.config.exception.model.InvalidQuery
+import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
+import com.cnpm.bikerentalapp.station.model.dto.StationDTO
 import com.cnpm.bikerentalapp.station.model.entity.BikeStation
+import com.cnpm.bikerentalapp.station.services.StationServices
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
@@ -19,7 +25,8 @@ import kotlin.reflect.full.memberProperties
 @Service
 class BikeServices(
     private val util: BikeUtility,
-    private val bikeRepo: BikeRepository
+    private val bikeRepo: BikeRepository,
+    private val stationServices: StationServices
 ) {
 
     fun getAllBikes() : List<BikeDTO> = bikeRepo.findAll().map { it.mapBikeToDTO() }.toList()
@@ -27,16 +34,10 @@ class BikeServices(
     fun getBikeByID(id: UUID) : Bike
         = bikeRepo.findById(id).orElseThrow { DataNotFoundException("Bike with ID $id not found") }
 
-    fun getBikeByPlate(plate: String) : BikeDTO {
+    fun getBikeByPlate(plate: String) : Bike {
         val bike: Optional<Bike> = bikeRepo.getBikeByPlate(plate)
         if (bike.isEmpty) throw DataNotFoundException("Bike with plate $plate not found")
-        return bike.get().mapBikeToDTO()
-    }
-
-    fun getBikeIdByPlate(plate: String) : UUID {
-        val id: Optional<UUID> = bikeRepo.getBikeIdByPlate(plate)
-        if (id.isEmpty) throw DataNotFoundException("Bike with plate $plate not found")
-        return id.get()
+        return bike.get()
     }
 
     fun getBikeByType(type: BikeType) : List<BikeDTO> = bikeRepo.getBikeByType(type.name).map { it.mapBikeToDTO() }.toList()
@@ -45,12 +46,41 @@ class BikeServices(
 
     fun getAvailableBikesByType(type: BikeType) : List<BikeDTO> = bikeRepo.getAvailableBikesByType(type.name).map { it.mapBikeToDTO() }.toList()
 
-    fun addBike(req: BikeCreateRequest, location: BikeStation?): BikeDTO {
+    fun rentingBike(req: BikeRenting): BikeDTO {
+        val targetBike: Bike = getBikeByPlate(req.plate)
+        val nearbyStation: StationDTO = stationServices.getNearbyStations(req.latitude, req.longitude, 20.0).firstOrNull()
+            ?: throw DataNotFoundException("No valid nearby station found")
+        if (req.action == BikeAction.RENT) {
+            if (targetBike.mapBikeToDTO().status == BikeStatus.IN_USE) throw InvalidQuery("Bike is not available")
+            if (!nearbyStation.bikeList.contains(targetBike.mapBikeToDTO())) throw InvalidQuery("Bike is not in the station")
+            for (prop in mapOf("location" to null, "status" to BikeStatus.IN_USE)) {
+                val field: Field = Bike::class.java.getDeclaredField(prop.key)
+                field.isAccessible = true
+                ReflectionUtils.setField(field, targetBike, prop.value)
+            }
+        } else if (req.action == BikeAction.RETURN) {
+            if (targetBike.mapBikeToDTO().status != BikeStatus.IN_USE) throw InvalidUpdate("Bike is not in use")
+            util.checkAvailableSpaceByLocation(nearbyStation.stationID, nearbyStation.capacity)
+            val battery: Int = req.battery ?: (targetBike.mapBikeToDTO().battery - 10)
+            for (prop in mapOf(
+                    "location" to stationServices.getStationByID(nearbyStation.stationID),
+                    "status" to BikeStatus.AVAILABLE,
+                    "battery" to battery
+            )) {
+                val field: Field = Bike::class.java.getDeclaredField(prop.key)
+                field.isAccessible = true
+                ReflectionUtils.setField(field, targetBike, prop.value)
+            }
+        }
+        return bikeRepo.save(targetBike).mapBikeToDTO()
+    }
+
+    fun addBike(req: BikeCreateRequest): BikeDTO {
         util.verifyBikePlate(req.plate, req.type)
         val newBike = Bike(
             plate = req.plate,
             type = req.type,
-            location = location,
+            location = if (req.location != null) stationServices.getStationByID(req.location) else null ,
             battery = req.battery ?: 100,
             status = req.status ?: BikeStatus.AVAILABLE
         )
@@ -58,11 +88,13 @@ class BikeServices(
         return newBike.mapBikeToDTO()
     }
 
-    fun updateBike(id: UUID, req: BikeUpdateRequest, capacity: Int?): BikeDTO {
-        val targetBike: Bike = bikeRepo.findById(id).orElseThrow { DataNotFoundException("Bike with id $id not found") }
-        if (req.newPlate != null) util.verifyBikePlate(req.newPlate, req.type ?: targetBike.publicType)
-        if (req.status != null) util.verifyBikeStatus(req.status, req.type ?: targetBike.publicType)
-        if (capacity != null) util.checkAvailableSpaceByLocation(req.location!!, capacity)
+    fun updateBike(req: BikeUpdateRequest): BikeDTO {
+        val targetBike: Bike = getBikeByPlate(req.plate)
+        if (targetBike.mapBikeToDTO().status == BikeStatus.IN_USE) throw InvalidUpdate("Bike is currently in use")
+        if (req.newPlate != null) util.verifyBikePlate(req.newPlate, req.type ?: targetBike.mapBikeToDTO().type)
+        if (req.status != null) util.verifyBikeStatus(req.status, req.type ?: targetBike.mapBikeToDTO().type)
+        val station: BikeStation? = if (req.location != null) stationServices.getStationByID(req.location) else null
+        if (station != null) util.checkAvailableSpaceByLocation(req.location!!, station.publicCapacity)
         for (prop in BikeUpdateRequest::class.memberProperties) {
             if (prop.name == "plate") continue
             if (prop.get(req) != null) {

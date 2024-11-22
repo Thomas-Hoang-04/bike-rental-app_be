@@ -24,12 +24,12 @@ class StationUtility(
         }
     }
 
-    fun retrieveTargetStation(stationID: UUID?, city: String?, _regionID: String?, regionNum: Int?): BikeStation {
+    fun retrieveTargetStation(stationID: UUID?, city: String?, tregionID: String?, regionNum: Int?): BikeStation {
         if (stationID != null && stationRepo.existsById(stationID)) {
             return stationRepo.findById(stationID).get()
         } else {
             if (regionNum == null) throw DataNotFoundException("Region number is required")
-            val regionID: String = _regionID ?: stationRepo.getRegionIDByCity(city ?: "")
+            val regionID: String = tregionID ?: stationRepo.getRegionIDByCity(city ?: "")
                 .orElseThrow { DataNotFoundException("City $city not found") }
             val targetStation: BikeStation = stationRepo.getStationByRegionID(regionID, regionNum).orElseThrow {
                 throw DataNotFoundException("Station with regionID ${regionID}${DecimalFormat("000").format(regionNum)} not found")

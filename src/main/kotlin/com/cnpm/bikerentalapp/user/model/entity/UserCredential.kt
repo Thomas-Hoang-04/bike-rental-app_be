@@ -1,7 +1,7 @@
 package com.cnpm.bikerentalapp.user.model.entity
 
-import com.cnpm.bikerentalapp.user.model.types.UserRole
 import com.cnpm.bikerentalapp.user.model.dto.UserDTO
+import com.cnpm.bikerentalapp.user.model.types.UserRole
 import com.cnpm.bikerentalapp.user.principal.UserPrincipal
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcType
@@ -34,9 +34,6 @@ class UserCredential(
     @OneToOne(mappedBy = "credential", cascade = [CascadeType.ALL])
     @PrimaryKeyJoinColumn
     private lateinit var details: UserDetails
-
-    val ID: UUID
-        get() = this.id
 
     fun mapUserToDTO() = UserDTO(
         this.id,

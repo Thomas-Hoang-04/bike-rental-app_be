@@ -43,9 +43,6 @@ class Bike(
     @Column(name = "bike_id")
     private lateinit var id: UUID
 
-    val publicType: BikeType
-        get() = this.type
-
     fun mapBikeToDTO() = BikeDTO(
         id = this.id,
         plate = this.plate,

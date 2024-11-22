@@ -26,7 +26,7 @@ class JWTToPrincipal(
         try {
             val user: UserCredential = userServices.getUserByUsername(
                 jwt.getClaim("username").asString() ?: "")
-            assert(user.ID == UUID.fromString(jwt.subject))
+            assert(user.mapUserToDTO().id == UUID.fromString(jwt.subject))
             return UserPrincipal(
                 UUID.fromString(jwt.subject),
                 jwt.getClaim("username").asString(),
