@@ -10,7 +10,9 @@ import com.cnpm.bikerentalapp.user.repository.UserCredentialRepository
 import com.cnpm.bikerentalapp.user.utility.UserUtility
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder
 import org.springframework.stereotype.Service
-import java.util.UUID
+import org.springframework.util.ReflectionUtils
+import java.lang.reflect.Field
+import java.util.*
 
 @Service
 class UserServices(
@@ -38,5 +40,13 @@ class UserServices(
         val newUser = util.mapCreateUserToEntity(req, pwd.encode(req.password))
         userRepo.save(newUser)
         return newUser.mapUserToDTO()
+    }
+
+    fun updatePassword(username: String, password: String) {
+        val user = getUserByUsername(username)
+        val field: Field = UserCredential::class.java.getDeclaredField("password")
+        field.isAccessible = true
+        ReflectionUtils.setField(field, user, pwd.encode(password))
+        userRepo.save(user)
     }
 }

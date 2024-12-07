@@ -2,6 +2,7 @@ package com.cnpm.bikerentalapp.user.model.entity
 
 import com.cnpm.bikerentalapp.user.model.dto.UserDetailsDTO
 import jakarta.persistence.*
+import jakarta.validation.constraints.Min
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -22,11 +23,18 @@ class UserDetails (
     @Column(name = "dob", nullable = false)
     private val dob: LocalDate,
 
+    @Column(name = "balance", nullable = false)
+    @Min(0)
+    private val balance: Int = 0,
+
+    @Suppress("unused")
     @OneToOne
     @MapsId
     @JoinColumn(name = "id", referencedColumnName = "id", nullable = false)
     private val credential: UserCredential
+
 ) {
+    @Suppress("unused")
     @Id
     @Column(name = "id")
     private lateinit var id: UUID
@@ -35,6 +43,7 @@ class UserDetails (
         this.name,
         this.phoneNum,
         this.email,
-        this.dob.format(DateTimeFormatter.ISO_LOCAL_DATE)
+        this.dob.format(DateTimeFormatter.ISO_LOCAL_DATE),
+        this.balance
     )
 }

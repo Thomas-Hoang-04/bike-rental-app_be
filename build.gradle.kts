@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
-    id("org.springframework.boot") version "3.3.4"
+    id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.6"
     kotlin("plugin.jpa") version "1.9.25"
 }
@@ -19,7 +19,7 @@ repositories {
     mavenCentral()
 }
 
-extra["spring-security.version"] = "6.3.4"
+extra["spring-security.version"] = "6.4.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -36,7 +36,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     testImplementation("org.springframework.security:spring-security-test")
     runtimeOnly("org.postgresql:postgresql")
-    implementation("com.twilio.sdk:twilio:10.6.3") {
+    implementation("com.twilio.sdk:twilio:10.6.4") {
         exclude(group = "commons-logging", module = "commons-logging")
     }
     developmentOnly("org.springframework.boot:spring-boot-devtools")

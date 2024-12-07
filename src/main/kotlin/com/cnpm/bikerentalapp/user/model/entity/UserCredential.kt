@@ -17,7 +17,6 @@ class UserCredential(
     @Column(name = "username", length = 10, unique = true)
     private val username: String,
 
-    @Suppress("unused")
     @Column(name = "password", nullable = false, unique = true)
     private val password: String,
 

@@ -29,7 +29,7 @@ class OTPService(
         try {
             userServices.getUserByUsername(req.username)
             if (otpMap[req.username] != null && System.currentTimeMillis() - otpMap[req.username]!!.second < 60000) {
-                return OTPResponse(OTPStatus.INVALID, "Please wait at least 60 seconds before requesting another OTP")
+                return OTPResponse(OTPStatus.INVALID, "Hãy chờ ít nhất 60 giây trước khi yêu cầu lại mã xác thực")
             }
             val tar = PhoneNumber(req.phoneNumber)
             val from = PhoneNumber(twilioConfig.phoneNumber)
@@ -37,26 +37,26 @@ class OTPService(
             val message: String = generateMessage(otp)
             Message.creator(tar, from, message).create()
             otpMap[req.username] = Pair(otp, System.currentTimeMillis())
-            return OTPResponse(OTPStatus.SUCCESS, "OTP sent successfully")
+            return OTPResponse(OTPStatus.SUCCESS, "Gửi mã OTP thành công")
         } catch (e: DataNotFoundException) {
             return OTPResponse(OTPStatus.INVALID, e.message)
         } catch (e: Exception) {
-            return OTPResponse(OTPStatus.FAILED, e.message ?: "OTP sending failed")
+            return OTPResponse(OTPStatus.FAILED, e.message ?: "Gửi mã OTP thất bại")
         }
     }
 
     fun verifyOTP(req: OTPValidationRequest): OTPResponse {
         return if (otpMap[req.username] == null) {
-            OTPResponse(OTPStatus.FAILED, "OTP request not found")
+            OTPResponse(OTPStatus.FAILED, "Không tìm thấy mã OTP")
         } else if (System.currentTimeMillis() - otpMap[req.username]!!.second > 300000) {
             otpMap.remove(req.username)
-            OTPResponse(OTPStatus.EXPIRED, "OTP request has expired")
+            OTPResponse(OTPStatus.EXPIRED, "Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới")
         }
         else if (otpMap[req.username]!!.first == req.otp) {
             otpMap.remove(req.username)
-            OTPResponse(OTPStatus.SUCCESS, "OTP is valid")
+            OTPResponse(OTPStatus.SUCCESS, "Mã OTP hợp lệ")
         } else {
-            OTPResponse(OTPStatus.INVALID, "OTP is invalid")
+            OTPResponse(OTPStatus.INVALID, "Mã OTP không hợp lệ. Vui lòng thử lại")
         }
     }
 }

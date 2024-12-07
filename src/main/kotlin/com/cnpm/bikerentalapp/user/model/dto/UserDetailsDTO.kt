@@ -7,5 +7,6 @@ data class UserDetailsDTO(
     @JsonProperty("phone_num")
     val phoneNum: String,
     val email: String,
-    val dob: String
+    val dob: String,
+    val balance: Int
 )
