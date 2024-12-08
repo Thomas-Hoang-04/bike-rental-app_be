@@ -1,10 +1,10 @@
 package com.cnpm.bikerentalapp.user.utility
 
 import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
-import com.cnpm.bikerentalapp.user.model.types.UserRole
 import com.cnpm.bikerentalapp.user.model.entity.UserCredential
 import com.cnpm.bikerentalapp.user.model.entity.UserDetails
 import com.cnpm.bikerentalapp.user.model.httprequest.UserCreateRequest
+import com.cnpm.bikerentalapp.user.model.types.UserRole
 import com.cnpm.bikerentalapp.user.repository.UserCredentialRepository
 import org.springframework.stereotype.Component
 import org.springframework.util.ReflectionUtils
@@ -20,13 +20,10 @@ class UserUtility(private val userRepo: UserCredentialRepository) {
     private val datePatterns: List<String> = listOf(
         "yyyy-MM-dd",
         "dd-MM-yyyy",
-        "MM-dd-yyyy",
         "yyyy/MM/dd",
         "dd/MM/yyyy",
-        "MM/dd/yyyy",
         "yyyy.MM.dd",
         "dd.MM.yyyy",
-        "MM.dd.yyyy"
     )
 
     fun verifyUserExistence(username: String): Boolean = userRepo.getByUsername(username).isPresent

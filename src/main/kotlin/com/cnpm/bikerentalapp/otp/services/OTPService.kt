@@ -2,10 +2,7 @@ package com.cnpm.bikerentalapp.otp.services
 
 import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.otp.config.TwilioConfig
-import com.cnpm.bikerentalapp.otp.model.OTPRequest
-import com.cnpm.bikerentalapp.otp.model.OTPResponse
-import com.cnpm.bikerentalapp.otp.model.OTPStatus
-import com.cnpm.bikerentalapp.otp.model.OTPValidationRequest
+import com.cnpm.bikerentalapp.otp.model.*
 import com.cnpm.bikerentalapp.user.services.UserServices
 import com.twilio.rest.api.v2010.account.Message
 
@@ -27,7 +24,7 @@ class OTPService(
 
     fun sendOTP(req: OTPRequest): OTPResponse {
         try {
-            userServices.getUserByUsername(req.username)
+            if (req.purpose == OTPPurpose.RESET_PASSWORD) userServices.getUserByUsername(req.username)
             if (otpMap[req.username] != null && System.currentTimeMillis() - otpMap[req.username]!!.second < 60000) {
                 return OTPResponse(OTPStatus.INVALID, "Hãy chờ ít nhất 60 giây trước khi yêu cầu lại mã xác thực")
             }
