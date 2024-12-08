@@ -13,6 +13,7 @@ import com.cnpm.bikerentalapp.user.services.UserServices
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -48,7 +49,7 @@ class AuthController(
             .body(CRUDResponse("signup", "success", target = true))
     }
 
-    @PostMapping("/forgot-password")
+    @PatchMapping("/forgot-password")
     fun forgotPassword(@Validated @RequestBody req: ResetPwdRequest): ResponseEntity<CRUDResponse<Boolean>> {
         userServices.updatePassword(req.username, req.newPassword)
         return ResponseEntity.ok()
@@ -56,7 +57,7 @@ class AuthController(
             .body(CRUDResponse("forgot-password", "success", target = true))
     }
 
-    @PostMapping("/reset-password")
+    @PatchMapping("/reset-password")
     fun resetPassword(@Validated @RequestBody req: ResetPwdRequest): ResponseEntity<CRUDResponse<Boolean>> {
         if (req.oldPassword == null) throw InvalidUpdate("Old password is required")
         authManager.authenticate(LoginRequest(req.username, req.oldPassword).mapToAuthToken())

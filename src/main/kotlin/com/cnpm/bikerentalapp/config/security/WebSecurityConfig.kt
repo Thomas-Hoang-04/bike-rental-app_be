@@ -40,8 +40,7 @@ class WebSecurityConfig(
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/auth/**").anonymous()
                         .requestMatchers("/api/otp/**").anonymous()
-                        .requestMatchers("/api/**/add", "/api/user/**",
-                            "/api/**/delete/**", "/api/**/update").hasRole("ADMIN")
+                        .requestMatchers(*(URL.ADMIN)).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 }
 
