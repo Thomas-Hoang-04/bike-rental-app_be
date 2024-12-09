@@ -3,6 +3,7 @@ package com.cnpm.bikerentalapp.user.services
 import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import com.cnpm.bikerentalapp.config.exception.model.UserExisted
+import com.cnpm.bikerentalapp.user.model.dto.TopUpRequest
 import com.cnpm.bikerentalapp.user.model.dto.UserDTO
 import com.cnpm.bikerentalapp.user.model.entity.UserCredential
 import com.cnpm.bikerentalapp.user.model.httprequest.UserCreateRequest
@@ -33,6 +34,8 @@ class UserServices(
         }
     }
 
+    fun checkUserExistence(username: String): Boolean = util.verifyUserExistence(username)
+
     fun addUser(req: UserCreateRequest): UserDTO {
         if (util.verifyUserExistence(req.username)) throw UserExisted("User with username ${req.username} already exists")
         if (!util.checkPhoneNumber(req.details.phoneNum)) throw InvalidUpdate("Phone number is invalid")
@@ -47,6 +50,12 @@ class UserServices(
         val field: Field = UserCredential::class.java.getDeclaredField("password")
         field.isAccessible = true
         ReflectionUtils.setField(field, user, pwd.encode(password))
+        userRepo.save(user)
+    }
+
+    fun topUpBalance(req: TopUpRequest) {
+        val user = getUserByUsername(req.username)
+        user.updateBalance(req.amount)
         userRepo.save(user)
     }
 }

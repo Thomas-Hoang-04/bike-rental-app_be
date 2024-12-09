@@ -1,6 +1,5 @@
 package com.cnpm.bikerentalapp.user.controller
 
-import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import com.cnpm.bikerentalapp.config.httpresponse.CRUDResponse
 import com.cnpm.bikerentalapp.config.jwt.JWTManager
 import com.cnpm.bikerentalapp.user.model.dto.UserDTO
@@ -13,11 +12,7 @@ import com.cnpm.bikerentalapp.user.services.UserServices
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/auth")
@@ -55,15 +50,5 @@ class AuthController(
         return ResponseEntity.ok()
             .header("Title", "Forgot Password")
             .body(CRUDResponse("forgot-password", "success", target = true))
-    }
-
-    @PatchMapping("/reset-password")
-    fun resetPassword(@Validated @RequestBody req: ResetPwdRequest): ResponseEntity<CRUDResponse<Boolean>> {
-        if (req.oldPassword == null) throw InvalidUpdate("Old password is required")
-        authManager.authenticate(LoginRequest(req.username, req.oldPassword).mapToAuthToken())
-        userServices.updatePassword(req.username, req.newPassword)
-        return ResponseEntity.ok()
-            .header("Title", "Reset Password")
-            .body(CRUDResponse("reset-password", "success", target = true))
     }
 }

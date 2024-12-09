@@ -47,4 +47,8 @@ class UserCredential(
         this.password,
         listOf(SimpleGrantedAuthority(this.role.name))
     )
+
+    fun updateBalance(amount: Int) {
+        this.details.updateBalance(amount)
+    }
 }

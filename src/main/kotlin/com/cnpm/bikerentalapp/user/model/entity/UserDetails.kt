@@ -3,6 +3,8 @@ package com.cnpm.bikerentalapp.user.model.entity
 import com.cnpm.bikerentalapp.user.model.dto.UserDetailsDTO
 import jakarta.persistence.*
 import jakarta.validation.constraints.Min
+import org.springframework.util.ReflectionUtils
+import java.lang.reflect.Field
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -46,4 +48,10 @@ class UserDetails (
         this.dob.format(DateTimeFormatter.ISO_LOCAL_DATE),
         this.balance
     )
+
+    fun updateBalance(amount: Int) {
+        val field: Field = this::class.java.getDeclaredField("balance")
+        field.isAccessible = true
+        ReflectionUtils.setField(field, this, this.balance + amount)
+    }
 }

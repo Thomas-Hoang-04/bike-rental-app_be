@@ -24,7 +24,16 @@ class OTPService(
 
     fun sendOTP(req: OTPRequest): OTPResponse {
         try {
-            if (req.purpose == OTPPurpose.RESET_PASSWORD) userServices.getUserByUsername(req.username)
+            when (req.purpose) {
+                OTPPurpose.RESET_PASSWORD -> {
+                    userServices.getUserByUsername(req.username)
+                }
+                OTPPurpose.SIGNUP -> {
+                    if (userServices.checkUserExistence(req.username)) {
+                        return OTPResponse(OTPStatus.INVALID, "Tài khoản đã tồn tại")
+                    }
+                }
+            }
             if (otpMap[req.username] != null && System.currentTimeMillis() - otpMap[req.username]!!.second < 60000) {
                 return OTPResponse(OTPStatus.INVALID, "Hãy chờ ít nhất 60 giây trước khi yêu cầu lại mã xác thực")
             }
