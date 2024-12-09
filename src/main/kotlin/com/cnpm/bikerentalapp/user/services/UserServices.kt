@@ -37,7 +37,7 @@ class UserServices(
     fun checkUserExistence(username: String): Boolean = util.verifyUserExistence(username)
 
     fun addUser(req: UserCreateRequest): UserDTO {
-        if (util.verifyUserExistence(req.username)) throw UserExisted("User with username ${req.username} already exists")
+        if (util.verifyUserExistence(req.username)) throw UserExisted("User with from ${req.username} already exists")
         if (!util.checkPhoneNumber(req.details.phoneNum)) throw InvalidUpdate("Phone number is invalid")
         if (!util.checkEmail(req.details.email)) throw InvalidUpdate("Email is invalid")
         val newUser = util.mapCreateUserToEntity(req, pwd.encode(req.password))
@@ -54,7 +54,7 @@ class UserServices(
     }
 
     fun topUpBalance(req: TopUpRequest) {
-        val user = getUserByUsername(req.username)
+        val user = getUserByUsername(req.to)
         user.updateBalance(req.amount)
         userRepo.save(user)
     }

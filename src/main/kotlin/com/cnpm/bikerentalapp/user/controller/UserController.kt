@@ -22,6 +22,15 @@ class UserController(
     private val jwtManager: JWTManager,
     private val authManager: AuthenticationManager
 ) {
+    private fun headerVerification(authHeader: String): String {
+        if (!authHeader.startsWith("Bearer ")) {
+            throw InvalidQuery("Invalid token")
+        }
+        val token = jwtManager.decode(authHeader.substring(7))
+        val issuer = token.getClaim("username").asString() ?: ""
+        return issuer
+    }
+
     @GetMapping("/all")
     fun getAllUsers() : ResponseEntity<QueryResponse<Unit, UserDTO>> {
         val users: List<UserDTO> = userServices.getAllUsers()
@@ -36,24 +45,20 @@ class UserController(
             throw InvalidQuery("Invalid token")
         }
         val token = jwtManager.decode(authHeader.substring(7))
-        val username = token.getClaim("username").asString() ?: ""
+        val username = token.getClaim("from").asString() ?: ""
         val user: UserDTO = userServices.getUserByUsername(username).mapUserToDTO()
         return ResponseEntity.ok()
             .header("Title", "User")
-            .body(QueryResponse("get", 1, mapOf("username" to username), listOf(user)))
+            .body(QueryResponse("get", 1, mapOf("from" to username), listOf(user)))
     }
 
-    @PostMapping("/top-up/")
+    @PostMapping("/top-up", "/sharing")
     fun topUpBalance(
             @RequestHeader(value = "Authorization", required = true) authHeader: String,
             @RequestBody req: TopUpRequest
     ): ResponseEntity<CRUDResponse<Boolean>> {
-        if (!authHeader.startsWith("Bearer ")) {
-            throw InvalidQuery("Invalid token")
-        }
-        val token = jwtManager.decode(authHeader.substring(7))
-        val issuer = token.getClaim("username").asString() ?: ""
-        if (issuer.isBlank() || issuer != req.username) {
+        val issuer = headerVerification(authHeader)
+        if (issuer.isBlank() || issuer != req.from) {
             throw InvalidQuery("Invalid issuer")
         }
         userServices.topUpBalance(req)
