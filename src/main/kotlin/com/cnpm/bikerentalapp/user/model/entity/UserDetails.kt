@@ -41,6 +41,9 @@ class UserDetails (
     @Column(name = "id")
     private lateinit var id: UUID
 
+    val accountBalance: Int
+        get() = this.balance
+
     fun mapEntityToDTO() = UserDetailsDTO(
         this.name,
         this.phoneNum,

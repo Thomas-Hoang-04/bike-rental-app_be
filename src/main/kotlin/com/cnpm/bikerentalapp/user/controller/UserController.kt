@@ -5,14 +5,17 @@ import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import com.cnpm.bikerentalapp.config.httpresponse.CRUDResponse
 import com.cnpm.bikerentalapp.config.httpresponse.QueryResponse
 import com.cnpm.bikerentalapp.config.jwt.JWTManager
-import com.cnpm.bikerentalapp.user.model.dto.TopUpRequest
+import com.cnpm.bikerentalapp.user.model.dto.TransactionsDetailsDTO
+import com.cnpm.bikerentalapp.user.model.dto.TripDetailsDTO
 import com.cnpm.bikerentalapp.user.model.dto.UserDTO
-import com.cnpm.bikerentalapp.user.model.httprequest.LoginRequest
-import com.cnpm.bikerentalapp.user.model.httprequest.ResetPwdRequest
+import com.cnpm.bikerentalapp.user.model.httprequest.TopUpRequest
+import com.cnpm.bikerentalapp.user.model.httprequest.TransactionRequest
+import com.cnpm.bikerentalapp.user.model.httprequest.TripRequest
+import com.cnpm.bikerentalapp.user.model.types.TransactionPurpose
+import com.cnpm.bikerentalapp.user.model.types.TransactionStatus
 import com.cnpm.bikerentalapp.user.services.UserServices
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -20,15 +23,33 @@ import org.springframework.web.bind.annotation.*
 class UserController(
     private val userServices: UserServices,
     private val jwtManager: JWTManager,
-    private val authManager: AuthenticationManager
 ) {
-    private fun headerVerification(authHeader: String): String {
+    private fun headerVerification(authHeader: String, ref: String) {
         if (!authHeader.startsWith("Bearer ")) {
             throw InvalidQuery("Invalid token")
         }
         val token = jwtManager.decode(authHeader.substring(7))
         val issuer = token.getClaim("username").asString() ?: ""
-        return issuer
+        if (issuer.isBlank() || issuer != ref) {
+            throw InvalidQuery("Invalid issuer")
+        }
+    }
+
+    private fun handleTransaction(action: String, status: TransactionStatus): ResponseEntity<CRUDResponse<TransactionStatus>> =
+        when (status) {
+            TransactionStatus.SUCCESS -> {
+                ResponseEntity.ok()
+                    .header("Title", "Transaction")
+                    .body(CRUDResponse(action, "success", target = status))
+            }
+            TransactionStatus.FAILED -> {
+                throw InvalidUpdate("Transaction failed due to insufficient balance")
+            }
+            else -> {
+                ResponseEntity.status(202)
+                    .header("Title", "Transaction")
+                    .body(CRUDResponse(action, "pending", target = status))
+            }
     }
 
     @GetMapping("/all")
@@ -45,35 +66,75 @@ class UserController(
             throw InvalidQuery("Invalid token")
         }
         val token = jwtManager.decode(authHeader.substring(7))
-        val username = token.getClaim("from").asString() ?: ""
+        val username = token.getClaim("username").asString() ?: ""
         val user: UserDTO = userServices.getUserByUsername(username).mapUserToDTO()
         return ResponseEntity.ok()
             .header("Title", "User")
-            .body(QueryResponse("get", 1, mapOf("from" to username), listOf(user)))
+            .body(QueryResponse("username", 1, mapOf("username" to username), listOf(user)))
+    }
+
+    @GetMapping("/transaction/{username}")
+    fun getTransactionHistory(
+        @RequestHeader(value = "Authorization", required = true) authHeader: String,
+        @PathVariable username: String
+    ): ResponseEntity<QueryResponse<String, TransactionsDetailsDTO>> {
+        headerVerification(authHeader, username)
+        val transactions = userServices.getTransactionHistory(username)
+        return ResponseEntity.ok()
+            .header("Title", "Transaction History")
+            .body(QueryResponse("username", transactions.size, mapOf("username" to username), transactions))
+    }
+
+    @PostMapping("/transaction")
+    fun addTransaction(
+        @RequestHeader(value = "Authorization", required = true) authHeader: String,
+        @RequestBody req: TransactionRequest
+    ): ResponseEntity<CRUDResponse<TransactionStatus>> {
+        when (req.purpose) {
+            TransactionPurpose.TRIP -> {
+                if (req.amount > 0) throw InvalidUpdate("Phí giao dịch không hợp lệ")
+            }
+            else -> {
+                if (req.amount <= 0) throw InvalidUpdate("Số tiền giao dịch phải lớn hơn 0")
+            }
+        }
+        headerVerification(authHeader, req.username)
+        return handleTransaction("transaction", userServices.addTransaction(req))
+    }
+
+    @GetMapping("/trip/{username}")
+    fun getTripDetails(
+        @RequestHeader(value = "Authorization", required = true) authHeader: String,
+        @PathVariable username: String
+    ): ResponseEntity<QueryResponse<String, TripDetailsDTO>> {
+        headerVerification(authHeader, username)
+        val trips = userServices.getTripDetails(username)
+        return ResponseEntity.ok()
+            .header("Title", "Trip History")
+            .body(QueryResponse("username", trips.size, mapOf("username" to username), trips))
+    }
+
+    @PostMapping("/trip")
+    fun addTripDetails(
+        @RequestHeader(value = "Authorization", required = true) authHeader: String,
+        @RequestBody req: TripRequest
+    ): ResponseEntity<CRUDResponse<TransactionStatus>> {
+        if (req.fee <= 0) throw InvalidUpdate("Phí giao dịch không hợp lệ")
+        headerVerification(authHeader, req.username)
+        return handleTransaction("Update trip", userServices.addTrip(req))
     }
 
     @PostMapping("/top-up", "/sharing")
     fun topUpBalance(
             @RequestHeader(value = "Authorization", required = true) authHeader: String,
-            @RequestBody req: TopUpRequest
-    ): ResponseEntity<CRUDResponse<Boolean>> {
-        val issuer = headerVerification(authHeader)
-        if (issuer.isBlank() || issuer != req.from) {
-            throw InvalidQuery("Invalid issuer")
-        }
-        userServices.topUpBalance(req)
-        return ResponseEntity.ok()
-            .header("Title", "Top-up")
-            .body(CRUDResponse("top-up", "success", target = true))
-    }
-
-    @PatchMapping("/reset-password")
-    fun resetPassword(@Validated @RequestBody req: ResetPwdRequest): ResponseEntity<CRUDResponse<Boolean>> {
-        if (req.oldPassword == null) throw InvalidUpdate("Old password is required")
-        authManager.authenticate(LoginRequest(req.username, req.oldPassword).mapToAuthToken())
-        userServices.updatePassword(req.username, req.newPassword)
-        return ResponseEntity.ok()
-            .header("Title", "Reset Password")
-            .body(CRUDResponse("reset-password", "success", target = true))
+            @RequestBody req: TopUpRequest,
+            orgReq: HttpServletRequest
+    ): ResponseEntity<CRUDResponse<TransactionStatus>> {
+        val action = orgReq.requestURI.split("/").last()
+        if (req.amount <= 0) throw InvalidUpdate("Số tiền giao dịch phải lớn hơn 0")
+        if (action == "sharing" && req.from == req.to) throw InvalidUpdate("Không thể chia sẻ điểm cho chính mình")
+        if (action == "top-up" && req.from != req.to) throw InvalidUpdate("Không thể nạp tiền cho người khác")
+        headerVerification(authHeader, req.from)
+        return handleTransaction(action, userServices.topUpBalance(req))
     }
 }

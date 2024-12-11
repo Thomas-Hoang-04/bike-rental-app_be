@@ -34,6 +34,18 @@ class UserCredential(
     @PrimaryKeyJoinColumn
     private lateinit var details: UserDetails
 
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
+    val transactions: MutableList<TransactionsDetails> = mutableListOf()
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
+    val trips: MutableList<TripDetails> = mutableListOf()
+
+    val user : String
+        get() = this.username
+
+    val balance: Int
+        get() = this.details.accountBalance
+
     fun mapUserToDTO() = UserDTO(
         this.id,
         this.username,

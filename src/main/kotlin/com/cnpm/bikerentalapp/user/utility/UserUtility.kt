@@ -1,11 +1,12 @@
 package com.cnpm.bikerentalapp.user.utility
 
 import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
+import com.cnpm.bikerentalapp.config.utility.Geolocation
 import com.cnpm.bikerentalapp.user.model.entity.UserCredential
 import com.cnpm.bikerentalapp.user.model.entity.UserDetails
 import com.cnpm.bikerentalapp.user.model.httprequest.UserCreateRequest
 import com.cnpm.bikerentalapp.user.model.types.UserRole
-import com.cnpm.bikerentalapp.user.repository.UserCredentialRepository
+import com.cnpm.bikerentalapp.user.repository.UserRepository
 import org.springframework.stereotype.Component
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Field
@@ -13,9 +14,13 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.*
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 @Component
-class UserUtility(private val userRepo: UserCredentialRepository) {
+class UserUtility(private val userRepo: UserRepository) {
 
     private val datePatterns: List<String> = listOf(
         "yyyy-MM-dd",
@@ -71,5 +76,27 @@ class UserUtility(private val userRepo: UserCredentialRepository) {
         field.isAccessible = true
         ReflectionUtils.setField(field, newUser, details)
         return newUser
+    }
+
+    private fun calculateHaversineDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
+        // TODO: Implement parallel haversine distance calculation in Reactive
+        val earthRadius = 6371.0
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLng = Math.toRadians(lng2 - lng1)
+        val a = sin(dLat / 2) * sin(dLat / 2) +
+                cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
+                sin(dLng / 2) * sin(dLng / 2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        return earthRadius * c
+    }
+
+    fun calculateDistance(route: List<Geolocation>): Double {
+        var distance = 0.0
+        for (i in 0 until route.size - 1) {
+            val (lat1, lng1) = route[i]
+            val (lat2, lng2) = route[i + 1]
+            distance += calculateHaversineDistance(lat1, lng1, lat2, lng2)
+        }
+        return distance
     }
 }
