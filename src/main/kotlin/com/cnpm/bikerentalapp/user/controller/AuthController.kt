@@ -1,5 +1,6 @@
 package com.cnpm.bikerentalapp.user.controller
 
+import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import com.cnpm.bikerentalapp.config.httpresponse.CRUDResponse
 import com.cnpm.bikerentalapp.config.jwt.JWTManager
 import com.cnpm.bikerentalapp.user.model.dto.UserDTO
@@ -50,5 +51,16 @@ class AuthController(
         return ResponseEntity.ok()
             .header("Title", "Forgot Password")
             .body(CRUDResponse("forgot-password", "success", target = true))
+    }
+
+    @PatchMapping("/reset-password")
+    fun resetPassword(@Validated @RequestBody req: ResetPwdRequest): ResponseEntity<CRUDResponse<Boolean>> {
+        if (req.oldPassword == null) throw InvalidUpdate("Old password is required")
+        if (req.oldPassword == req.newPassword) throw InvalidUpdate("New password must be different from the old one")
+        authManager.authenticate(LoginRequest(req.username, req.oldPassword).mapToAuthToken())
+        userServices.updatePassword(req.username, req.newPassword)
+        return ResponseEntity.ok()
+            .header("Title", "Reset Password")
+            .body(CRUDResponse("reset-password", "success", target = true))
     }
 }
