@@ -1,6 +1,7 @@
 package com.cnpm.bikerentalapp.config.security
 
 import com.cnpm.bikerentalapp.config.jwt.JWTAuthFilter
+import com.cnpm.bikerentalapp.user.model.types.UserRole
 import com.cnpm.bikerentalapp.user.services.AuthServices
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -38,9 +39,9 @@ class WebSecurityConfig(
                 .authorizeHttpRequests {
                     it
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/api/auth/**").anonymous()
                         .requestMatchers("/api/otp/**").anonymous()
-                        .requestMatchers(*(URL.ADMIN)).hasRole("ADMIN")
+                        .requestMatchers(*URL.AUTH).anonymous()
+                        .requestMatchers(*URL.ADMIN).hasAuthority(UserRole.ADMIN.name)
                         .anyRequest().authenticated()
                 }
 

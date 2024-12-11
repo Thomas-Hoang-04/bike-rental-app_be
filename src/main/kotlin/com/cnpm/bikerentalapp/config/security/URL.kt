@@ -5,4 +5,6 @@ object URL {
         "/api/bike/delete/**", "/api/bike/update", "/api/station/add",
         "/api/station/delete", "/api/station/update",
         )
+
+    val AUTH: Array<String> = arrayOf("/api/auth/login", "/api/auth/signup", "/api/auth/forgot-password")
 }
