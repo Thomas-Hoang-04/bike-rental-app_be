@@ -34,11 +34,9 @@ class BikeServices(
     fun getBikeByID(id: UUID) : Bike
         = bikeRepo.findById(id).orElseThrow { DataNotFoundException("Bike with ID $id not found") }
 
-    fun getBikeByPlate(plate: String) : Bike {
-        val bike: Optional<Bike> = bikeRepo.getBikeByPlate(plate)
-        if (bike.isEmpty) throw DataNotFoundException("Bike with plate $plate not found")
-        return bike.get()
-    }
+    fun getBikeByPlate(plate: String) : Bike = bikeRepo.getBikeByPlate(plate).orElseThrow {
+            DataNotFoundException("Bike with plate $plate not found")
+        }
 
     fun getBikeByType(type: BikeType) : List<BikeDTO> = bikeRepo.getBikeByType(type.name).map { it.mapBikeToDTO() }.toList()
 
@@ -92,7 +90,7 @@ class BikeServices(
         val targetBike: Bike = getBikeByPlate(req.plate)
         if (targetBike.mapBikeToDTO().status == BikeStatus.IN_USE) throw InvalidUpdate("Bike is currently in use")
         if (req.newPlate != null) util.verifyBikePlate(req.newPlate, req.type ?: targetBike.mapBikeToDTO().type)
-        if (req.status != null) util.verifyBikeStatus(req.status, req.type ?: targetBike.mapBikeToDTO().type)
+        if (req.status != null) util.verifyBikeChargingStatus(req.status, req.type ?: targetBike.mapBikeToDTO().type)
         val station: BikeStation? = if (req.location != null) stationServices.getStationByID(req.location) else null
         if (station != null) util.checkAvailableSpaceByLocation(req.location!!, station.publicCapacity)
         for (prop in BikeUpdateRequest::class.memberProperties) {
@@ -111,6 +109,4 @@ class BikeServices(
         val bike: Bike = bikeRepo.getReferenceById(id)
         bikeRepo.delete(bike)
     }
-
-    // fun deleteAllBikes() = bikeRepo.deleteAll()
 }

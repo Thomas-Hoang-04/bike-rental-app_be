@@ -15,7 +15,7 @@ import java.util.*
 @Table(name = "bike_data")
 class Bike(
 
-    @Column(name = "plate", nullable = false, unique = true, length = 16)
+    @Column(name = "plate", nullable = false, unique = true, length = 12)
     private val plate: String,
 
     @Enumerated(EnumType.STRING)

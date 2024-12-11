@@ -15,7 +15,7 @@ class BikeUtility(private val bikeRepo: BikeRepository) {
         throw InvalidUpdate("Plate $plate does not match bike type ${type.toString().lowercase()}")
     }
 
-    fun verifyBikeStatus(status: BikeStatus, type: BikeType) {
+    fun verifyBikeChargingStatus(status: BikeStatus, type: BikeType) {
         if (status == BikeStatus.CHARGING && type == BikeType.ELECTRIC) return
         if (status == BikeStatus.AVAILABLE || status == BikeStatus.IN_USE) return
         throw InvalidUpdate("Only electric bikes can set status to CHARGING")

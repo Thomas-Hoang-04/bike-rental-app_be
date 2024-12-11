@@ -1,9 +1,8 @@
 package com.cnpm.bikerentalapp.config.jwt
 
 import com.auth0.jwt.exceptions.JWTVerificationException
-import com.cnpm.bikerentalapp.config.exception.model.ErrorResponse
+import com.cnpm.bikerentalapp.config.exception.handler.ErrorResponseWriter
 import com.cnpm.bikerentalapp.user.principal.UserPrincipalAuthToken
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -12,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import org.springframework.web.filter.OncePerRequestFilter
-import java.time.LocalDateTime
 import java.util.*
 
 @Component
@@ -20,23 +18,6 @@ class JWTAuthFilter(
     private val jwtManager: JWTManager,
     private val jwtToPrincipal: JWTToPrincipal
 ): OncePerRequestFilter() {
-
-    private fun httpErrorResponse(res: HttpServletResponse, e: Exception, uri: String) {
-        val errorRes = ErrorResponse(
-            LocalDateTime.now().toString(),
-            HttpServletResponse.SC_UNAUTHORIZED,
-            "Unauthorized",
-            e.javaClass,
-            e.message ?: "Invalid JWT due to ${e.message}",
-            uri
-        )
-        res.status = HttpServletResponse.SC_UNAUTHORIZED
-        res.contentType = "application/json"
-        res.characterEncoding = "UTF-8"
-        res.writer.write(ObjectMapper()
-            .writeValueAsString(errorRes)
-        )
-    }
 
     private fun extractTokenFromRequest(req: HttpServletRequest): Optional<String> {
         val token: String? = req.getHeader("Authorization")
@@ -60,9 +41,9 @@ class JWTAuthFilter(
 
             filterChain.doFilter(req, res)
         } catch (e: JWTVerificationException) {
-            httpErrorResponse(res, e, req.requestURI)
+            ErrorResponseWriter.write(res, e, req.requestURI)
         } catch (e: BadCredentialsException) {
-            httpErrorResponse(res, e, req.requestURI)
+            ErrorResponseWriter.write(res, e, req.requestURI)
         }
     }
 }

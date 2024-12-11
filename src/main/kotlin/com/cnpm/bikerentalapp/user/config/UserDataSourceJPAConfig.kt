@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
@@ -21,6 +22,7 @@ import javax.sql.DataSource
 class UserDataSourceJPAConfig {
 
     @Bean
+    @Primary
     fun userEntityManagerFactory(@Qualifier("userDataSource") dataSource: DataSource,
         builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
             return builder.dataSource(dataSource)
