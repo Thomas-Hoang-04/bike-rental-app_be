@@ -2,6 +2,7 @@ package com.cnpm.bikerentalapp.station.services
 
 import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
+import com.cnpm.bikerentalapp.config.utility.Geolocation
 import com.cnpm.bikerentalapp.station.model.dto.StationDTO
 import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import com.cnpm.bikerentalapp.station.model.httprequest.StationCreateRequest
@@ -56,13 +57,13 @@ class StationServices(
 
     fun addStation(req: StationCreateRequest) : StationDTO {
         val regionCodex: Pair<String, Int> = util.extractRegionCodex(req.city, req.regionID)
-        if (!util.verifyStationLocation(req.latitude, req.longitude))
+        if (!util.verifyStationLocation(req.coordinates))
             throw InvalidUpdate("Invalid location coordinates")
         val newStation = BikeStation(
             regionID = regionCodex.first,
             regionNum = regionCodex.second,
-            latitude = req.latitude,
-            longitude = req.longitude,
+            latitude = req.coordinates.lat,
+            longitude = req.coordinates.lng,
             name = req.name,
             address = req.address,
             capacity = req.capacity ?: 0,
@@ -78,9 +79,16 @@ class StationServices(
         for (prop in StationUpdateRequest::class.memberProperties) {
             if (prop.name == "regionID" || prop.name == "regionNum" || prop.name == "city") continue
             if (prop.get(req) != null) {
-                val field: Field = BikeStation::class.java.getDeclaredField(prop.name)
-                field.isAccessible = true
-                ReflectionUtils.setField(field, targetStation, prop.get(req))
+                if (prop.name == "coordinates") {
+                    if (!util.verifyStationLocation(prop.get(req) as Geolocation))
+                        throw InvalidUpdate("Invalid location coordinates")
+                    val coordinates: Geolocation = prop.get(req) as Geolocation
+                    coordinates.mapToEntity(targetStation)
+                } else {
+                    val field: Field = BikeStation::class.java.getDeclaredField(prop.name)
+                    field.isAccessible = true
+                    ReflectionUtils.setField(field, targetStation, prop.get(req))
+                }
             }
         }
         targetStation.createGeoLocation()

@@ -1,9 +1,10 @@
 package com.cnpm.bikerentalapp.station.model.dto
 
 import com.cnpm.bikerentalapp.bike.model.dto.BikeDTO
+import com.cnpm.bikerentalapp.config.utility.Geolocation
 import com.cnpm.bikerentalapp.station.model.types.StationStatus
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.UUID
+import java.util.*
 
 data class StationDTO(
     @JsonProperty("station_id")
@@ -14,8 +15,7 @@ data class StationDTO(
 
     @JsonProperty("region_num")
     val regionNum: Int,
-    val latitude: Double,
-    val longitude: Double,
+    val coordinates: Geolocation,
     var name: String,
     val address: String,
     val capacity: Int,

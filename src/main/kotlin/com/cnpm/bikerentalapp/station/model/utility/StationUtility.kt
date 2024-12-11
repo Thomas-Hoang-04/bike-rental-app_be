@@ -1,6 +1,7 @@
 package com.cnpm.bikerentalapp.station.model.utility
 
 import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
+import com.cnpm.bikerentalapp.config.utility.Geolocation
 import com.cnpm.bikerentalapp.station.model.entity.BikeStation
 import com.cnpm.bikerentalapp.station.repository.StationRepository
 import org.springframework.stereotype.Component
@@ -38,6 +39,6 @@ class StationUtility(
         }
     }
 
-    fun verifyStationLocation(lat: Double, long: Double): Boolean
-        = lat in -90.0..90.0 && long in -180.0..180.0
+    fun verifyStationLocation(coordinates: Geolocation): Boolean
+        = coordinates.lat in -90.0..90.0 && coordinates.lng in -180.0..180.0
 }

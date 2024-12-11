@@ -9,7 +9,7 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Point
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "bike_station", indexes = [
@@ -47,7 +47,6 @@ class BikeStation (
     @OneToMany(mappedBy = "location", orphanRemoval = false,
         cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH])
     private val bikes: MutableList<Bike> = mutableListOf()
-
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -57,7 +56,7 @@ class BikeStation (
     val stationID: UUID
         get() = this.id
 
-    @Column(name = "station_geo", columnDefinition = "GEOGRAPHY(Point, 4326)", nullable = false)
+    @Column(name = "station_geo", columnDefinition = "GEOGRAPHY(POINT, 4326)", nullable = false)
     private lateinit var geoLocation: Point
 
     init {
@@ -75,8 +74,7 @@ class BikeStation (
         address = this.address,
         capacity = this.capacity,
         status = this.status,
-        latitude = this.latitude,
-        longitude = this.longitude,
+        coordinates = com.cnpm.bikerentalapp.config.utility.Geolocation(latitude, longitude),
         bikeList = this.bikes.map { it.mapBikeToDTO() }
     )
 

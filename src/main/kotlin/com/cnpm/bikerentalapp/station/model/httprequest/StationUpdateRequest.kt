@@ -1,9 +1,10 @@
 package com.cnpm.bikerentalapp.station.model.httprequest
 
+import com.cnpm.bikerentalapp.config.utility.Geolocation
 import com.cnpm.bikerentalapp.station.model.types.StationStatus
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.NotBlank
-import java.util.UUID
+import java.util.*
 
 data class StationUpdateRequest(
     @JsonProperty("station_id")
@@ -17,8 +18,7 @@ data class StationUpdateRequest(
     @JsonProperty("region_num")
     val regionNum: Int?,
 
-    val latitude: Double?,
-    val longitude: Double?,
+    val coordinates: Geolocation?,
     var name: String?,
     val address: String?,
     val capacity: Int?,
