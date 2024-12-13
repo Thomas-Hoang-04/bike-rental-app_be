@@ -6,8 +6,8 @@ plugins {
     kotlin("plugin.jpa") version "1.9.25"
 }
 
-group = "com.example"
-version = "1.5.0"
+group = "com.cnpm"
+version = "1.5.1"
 
 java {
     toolchain {
