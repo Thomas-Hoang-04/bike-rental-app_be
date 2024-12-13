@@ -1,6 +1,6 @@
 package com.cnpm.bikerentalapp.user.model.types
 
-@Suppress("unused", "unused")
+@Suppress("unused")
 enum class TicketTypes {
     SINGLE,
     DAILY,
