@@ -43,15 +43,15 @@ class BikeStation (
     @JdbcType(PostgreSQLEnumJdbcType::class)
     @Column(name = "status", nullable = false)
     private val status: StationStatus,
-
-    @OneToMany(mappedBy = "location", orphanRemoval = false,
-        cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH])
-    private val bikes: MutableList<Bike> = mutableListOf()
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "station_id")
     private lateinit var id: UUID
+
+    @OneToMany(mappedBy = "location", orphanRemoval = false, fetch = FetchType.EAGER,
+        cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH])
+    private val bikes: MutableList<Bike> = mutableListOf()
 
     val stationID: UUID
         get() = this.id
