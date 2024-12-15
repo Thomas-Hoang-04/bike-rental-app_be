@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.cnpm"
-version = "1.5.1"
+version = "1.5.2"
 
 java {
     toolchain {
