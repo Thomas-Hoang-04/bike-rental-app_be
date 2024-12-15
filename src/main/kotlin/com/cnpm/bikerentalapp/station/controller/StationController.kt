@@ -2,7 +2,6 @@ package com.cnpm.bikerentalapp.station.controller
 
 import com.cnpm.bikerentalapp.config.httpresponse.CRUDResponse
 import com.cnpm.bikerentalapp.config.httpresponse.QueryResponse
-import com.cnpm.bikerentalapp.station.model.dto.NearbyStation
 import com.cnpm.bikerentalapp.station.model.dto.StationDTO
 import com.cnpm.bikerentalapp.station.model.httprequest.StationCreateRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationDeleteRequest
@@ -77,11 +76,15 @@ class StationController(
     }
 
     @GetMapping("/nearby")
-    fun getNearbyStations(@Validated @RequestBody req: NearbyStation) : ResponseEntity<QueryResponse<Double, StationDTO>> {
-        val stations: List<StationDTO> = stationServices.getNearbyStations(req.latitude, req.longitude, req.radius)
+    fun getNearbyStations(
+        @Validated @RequestParam lat: Double,
+        @Validated @RequestParam lng: Double,
+        @Validated @RequestParam radius: Double
+    ) : ResponseEntity<QueryResponse<Double, StationDTO>> {
+        val stations: List<StationDTO> = stationServices.getNearbyStations(lat, lng, radius)
         return ResponseEntity.ok()
             .header("Title", "NearbyStationList")
-            .body(QueryResponse("nearby", stations.size, mapOf("latitude" to req.latitude, "longitude" to req.longitude, "radius" to req.radius), stations))
+            .body(QueryResponse("nearby", stations.size, mapOf("latitude" to lat, "longitude" to lng, "radius" to radius), stations))
     }
 
     @PostMapping("/add")
