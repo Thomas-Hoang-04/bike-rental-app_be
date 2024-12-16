@@ -4,14 +4,13 @@ import com.cnpm.bikerentalapp.bike.services.BikeServices
 import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import com.cnpm.bikerentalapp.config.exception.model.UserExisted
+import com.cnpm.bikerentalapp.user.model.dto.TicketDetailsDTO
 import com.cnpm.bikerentalapp.user.model.dto.TransactionsDetailsDTO
 import com.cnpm.bikerentalapp.user.model.dto.TripDetailsDTO
 import com.cnpm.bikerentalapp.user.model.dto.UserDTO
 import com.cnpm.bikerentalapp.user.model.entity.UserCredential
-import com.cnpm.bikerentalapp.user.model.httprequest.TopUpRequest
-import com.cnpm.bikerentalapp.user.model.httprequest.TransactionRequest
-import com.cnpm.bikerentalapp.user.model.httprequest.TripRequest
-import com.cnpm.bikerentalapp.user.model.httprequest.UserCreateRequest
+import com.cnpm.bikerentalapp.user.model.httprequest.*
+import com.cnpm.bikerentalapp.user.model.types.TicketTypes
 import com.cnpm.bikerentalapp.user.model.types.TransactionPurpose
 import com.cnpm.bikerentalapp.user.model.types.TransactionStatus
 import com.cnpm.bikerentalapp.user.repository.UserRepository
@@ -58,6 +57,32 @@ class UserServices(
         }
     }
 
+    fun getTicketDetails(username: String): List<TicketDetailsDTO> {
+        val user = getUserByUsername(username)
+        return user.tickets.map { it.mapEntityToDTO() }
+    }
+
+    fun buyTicket(req: TicketRequest): TransactionStatus {
+        val user = getUserByUsername(req.username)
+        val transactionList = mutableListOf<TransactionStatus>()
+        repeat(req.quantity) {
+            user.tickets.add(req.mapToEntity(user))
+            userRepo.save(user)
+            transactionList.add(
+                addTransaction(
+                    TransactionRequest(
+                        req.username,
+                        -req.price,
+                        TransactionPurpose.TICKET,
+                        "Thanh toán vé ${if (req.ticket == TicketTypes.DAILY) "ngày" else "tháng"}"
+                    )
+                )
+            )
+        }
+        return if (transactionList.any { it == TransactionStatus.FAILED }) TransactionStatus.FAILED
+            else TransactionStatus.SUCCESS
+    }
+
     fun checkUserExistence(username: String): Boolean = util.verifyUserExistence(username)
 
     fun addUser(req: UserCreateRequest): UserDTO {
@@ -75,6 +100,7 @@ class UserServices(
             if (req.amount < 0 && user.balance < -req.amount) TransactionStatus.FAILED
             else TransactionStatus.SUCCESS
         val transaction = req.mapToEntity(user, status)
+        user.updateBalance(req.amount)
         user.transactions.add(transaction)
         userRepo.save(user)
         return status

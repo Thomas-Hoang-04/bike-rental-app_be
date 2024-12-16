@@ -32,6 +32,7 @@ class UserDataSourceJPAConfig {
     }
 
     @Bean
+    @Primary
     fun userTransactionManager(
         @Qualifier("userEntityManagerFactory") entityManagerFactory: LocalContainerEntityManagerFactoryBean)
         : PlatformTransactionManager {

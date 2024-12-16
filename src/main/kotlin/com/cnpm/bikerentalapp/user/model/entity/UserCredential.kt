@@ -40,6 +40,9 @@ class UserCredential(
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
     val trips: MutableList<TripDetails> = mutableListOf()
 
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
+    val tickets: MutableList<TicketDetails> = mutableListOf()
+
     val user : String
         get() = this.username
 

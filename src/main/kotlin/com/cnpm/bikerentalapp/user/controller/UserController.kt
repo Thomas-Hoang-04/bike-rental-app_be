@@ -5,9 +5,11 @@ import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
 import com.cnpm.bikerentalapp.config.httpresponse.CRUDResponse
 import com.cnpm.bikerentalapp.config.httpresponse.QueryResponse
 import com.cnpm.bikerentalapp.config.jwt.JWTManager
+import com.cnpm.bikerentalapp.user.model.dto.TicketDetailsDTO
 import com.cnpm.bikerentalapp.user.model.dto.TransactionsDetailsDTO
 import com.cnpm.bikerentalapp.user.model.dto.TripDetailsDTO
 import com.cnpm.bikerentalapp.user.model.dto.UserDTO
+import com.cnpm.bikerentalapp.user.model.httprequest.TicketRequest
 import com.cnpm.bikerentalapp.user.model.httprequest.TopUpRequest
 import com.cnpm.bikerentalapp.user.model.httprequest.TransactionRequest
 import com.cnpm.bikerentalapp.user.model.httprequest.TripRequest
@@ -122,6 +124,28 @@ class UserController(
         if (req.fee <= 0) throw InvalidUpdate("Phí giao dịch không hợp lệ")
         headerVerification(authHeader, req.username)
         return handleTransaction("Update trip", userServices.addTrip(req))
+    }
+
+    @GetMapping("/ticket/{username}")
+    fun getTicketDetails(
+        @RequestHeader(value = "Authorization", required = true) authHeader: String,
+        @PathVariable username: String
+    ): ResponseEntity<QueryResponse<String, TicketDetailsDTO>> {
+        headerVerification(authHeader, username)
+        val tickets = userServices.getTicketDetails(username)
+        return ResponseEntity.ok()
+            .header("Title", "Ticket History")
+            .body(QueryResponse("username", tickets.size, mapOf("username" to username), tickets))
+    }
+
+    @PostMapping("/ticket")
+    fun buyTicket(
+        @RequestHeader(value = "Authorization", required = true) authHeader: String,
+        @RequestBody req: TicketRequest
+    ): ResponseEntity<CRUDResponse<TransactionStatus>> {
+        if (req.price <= 0) throw InvalidUpdate("Phí giao dịch không hợp lệ")
+        headerVerification(authHeader, req.username)
+        return handleTransaction("Buy ticket", userServices.buyTicket(req))
     }
 
     @PostMapping("/top-up", "/sharing")
