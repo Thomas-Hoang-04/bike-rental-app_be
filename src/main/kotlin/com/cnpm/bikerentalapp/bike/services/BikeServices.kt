@@ -46,7 +46,7 @@ class BikeServices(
 
     fun rentingBike(req: BikeRenting): BikeDTO {
         val targetBike: Bike = getBikeByPlate(req.plate)
-        val nearbyStation: StationDTO = stationServices.getNearbyStations(req.latitude, req.longitude, 20.0).firstOrNull()
+        val nearbyStation: StationDTO = stationServices.getNearbyStations(req.latitude, req.longitude, 10000.0).firstOrNull()
             ?: throw DataNotFoundException("No valid nearby station found")
         if (req.action == BikeAction.RENT) {
             if (targetBike.mapBikeToDTO().status == BikeStatus.IN_USE) throw InvalidQuery("Bike is not available")
