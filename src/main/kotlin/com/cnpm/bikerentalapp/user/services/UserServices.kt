@@ -65,7 +65,7 @@ class UserServices(
     fun buyTicket(req: TicketRequest): TransactionStatus {
         val user = getUserByUsername(req.username)
         val transactionList = mutableListOf<TransactionStatus>()
-        if (req.price < user.balance) return TransactionStatus.FAILED
+        if (req.price > user.balance) return TransactionStatus.FAILED
         repeat(req.quantity) {
             user.tickets.add(req.mapToEntity(user))
             userRepo.save(user)
@@ -116,7 +116,7 @@ class UserServices(
             throw InvalidUpdate("Invalid time format")
         }
         val user = getUserByUsername(req.username)
-        if (req.fee < user.balance) return TransactionStatus.FAILED
+        if (req.fee > user.balance) return TransactionStatus.FAILED
         bikeServices.getBikeByPlate(req.bikePlate)
         val postGISCoordinates = req.route.map { it.mapToPostGISCoordinates() }.toTypedArray()
         val route = GeometryFactory().createLineString(postGISCoordinates)
