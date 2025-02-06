@@ -1,4 +1,4 @@
-package com.cnpm.bikerentalapp.bike.model.utility
+package com.cnpm.bikerentalapp.bike.utility
 
 import com.cnpm.bikerentalapp.bike.model.types.BikeStatus
 import com.cnpm.bikerentalapp.bike.model.types.BikeType

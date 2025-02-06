@@ -9,7 +9,7 @@ import com.cnpm.bikerentalapp.station.model.httprequest.StationCreateRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationDeleteRequest
 import com.cnpm.bikerentalapp.station.model.httprequest.StationUpdateRequest
 import com.cnpm.bikerentalapp.station.model.types.StationStatus
-import com.cnpm.bikerentalapp.station.model.utility.StationUtility
+import com.cnpm.bikerentalapp.station.utility.StationUtility
 import com.cnpm.bikerentalapp.station.repository.StationRepository
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils

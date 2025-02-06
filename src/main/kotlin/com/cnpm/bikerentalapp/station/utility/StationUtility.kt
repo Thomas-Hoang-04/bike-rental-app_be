@@ -1,4 +1,4 @@
-package com.cnpm.bikerentalapp.station.model.utility
+package com.cnpm.bikerentalapp.station.utility
 
 import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.config.utility.Geolocation

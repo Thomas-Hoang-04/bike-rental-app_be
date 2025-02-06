@@ -8,8 +8,8 @@ import com.cnpm.bikerentalapp.bike.model.httprequest.BikeUpdateRequest
 import com.cnpm.bikerentalapp.bike.model.types.BikeAction
 import com.cnpm.bikerentalapp.bike.model.types.BikeStatus
 import com.cnpm.bikerentalapp.bike.model.types.BikeType
-import com.cnpm.bikerentalapp.bike.model.utility.BikeUtility
 import com.cnpm.bikerentalapp.bike.repository.BikeRepository
+import com.cnpm.bikerentalapp.bike.utility.BikeUtility
 import com.cnpm.bikerentalapp.config.exception.model.DataNotFoundException
 import com.cnpm.bikerentalapp.config.exception.model.InvalidQuery
 import com.cnpm.bikerentalapp.config.exception.model.InvalidUpdate
