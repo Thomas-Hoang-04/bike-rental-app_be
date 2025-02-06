@@ -23,8 +23,9 @@ _**Link to repository of the Android app for this project: [bike-rental-app](htt
   <img alt="twilio" src="https://img.shields.io/badge/-Twilio-red?style=for-the-badge&logo=twilio&logoColor=white"/>
   <img alt="git" src="https://img.shields.io/badge/-Git-gray?style=for-the-badge&logo=git"/>
   <img alt="github" src="https://img.shields.io/badge/-GitHub-black?style=for-the-badge&logo=github&logoColor=white"/>
+  <img alt="postman" src="https://img.shields.io/badge/-Postman-orange?style=for-the-badge&logo=postman&logoColor=white"/>
   <img alt="docker" src="https://img.shields.io/badge/-Docker-blue?style=for-the-badge&logo=docker&logoColor=white"/>
-  <img alt="intellij" src="https://img.shields.io/badge/-IntelliJ%20IDEA-orange?style=for-the-badge&logo=intellij-idea&logoColor=white"/>
+  <img alt="intellij" src="https://img.shields.io/badge/-IntelliJ%20IDEA-ff6c5b?style=for-the-badge&logo=intellij-idea&logoColor=white"/>
 </p>
 
 ### Prerequisites
